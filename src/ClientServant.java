@@ -19,7 +19,7 @@ public class ClientServant extends UnicastRemoteObject implements IRemoteClient 
     public void startCanvas() throws RemoteException {
         whiteBoard = new Canvas();
         whiteBoard.setVisible(true);
-        whiteBoard.setSize(710,500);
+        whiteBoard.setSize(730,550);
         whiteBoard.setResizable(false);
     }
 

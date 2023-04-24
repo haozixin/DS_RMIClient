@@ -31,7 +31,7 @@ public class Canvas extends JFrame {
     private Color remoteColor;
     DefaultListModel chatModel;
     Graphics g;
-    private boolean isManager;
+    private boolean isManager=true;
     private String fileName;
     private BufferedImage image;
     private String textDraw;
@@ -83,6 +83,18 @@ public class Canvas extends JFrame {
      */
     public Canvas(){
         super.setTitle("ZX Share White Board ~_~");
+        initComponents();
+        this.getContentPane().setBackground(Color.white);
+        boardPanel.setBorder(new BevelBorder(BevelBorder.LOWERED));
+        listPanel.setBackground(Color.white);
+        chatPanel.setBackground(Color.white);
+        menuBar.setBackground(Color.white);
+        menuBar.setBorder(new BevelBorder(BevelBorder.RAISED));
+
+
+
+
+
 //        mode = "";
 //        remoteStart = new Point(0, 0);
 //        remoteEnd = new Point(0, 0);
@@ -93,7 +105,7 @@ public class Canvas extends JFrame {
 //        color = new Color(0, 0, 0);
 //        remoteColor = new Color(0, 0, 0);
 //        chatModel = new DefaultListModel();
-        initComponents();
+
 //        fileName = null;
 //        image  = new BufferedImage(boardPanel.getWidth(), boardPanel.getHeight(), BufferedImage.TYPE_INT_RGB);
 //        g = image.createGraphics();
@@ -162,13 +174,13 @@ public class Canvas extends JFrame {
             }
         });
         boardPanel.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
+            public void mouseClicked(MouseEvent evt) {
                 boardPanelMouseClicked(evt);
             }
-            public void mousePressed(java.awt.event.MouseEvent evt) {
+            public void mousePressed(MouseEvent evt) {
                 boardPanelMousePressed(evt);
             }
-            public void mouseReleased(java.awt.event.MouseEvent evt) {
+            public void mouseReleased(MouseEvent evt) {
                 boardPanelMouseReleased(evt);
             }
         });
@@ -179,7 +191,6 @@ public class Canvas extends JFrame {
         });
 
         drawLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        drawLabel.setText("Drawing Section");
 
         GroupLayout boardPanelLayout = new GroupLayout(boardPanel);
         boardPanel.setLayout(boardPanelLayout);
@@ -187,7 +198,7 @@ public class Canvas extends JFrame {
                 boardPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
                         .addGroup(boardPanelLayout.createSequentialGroup()
                                 .addComponent(drawLabel)
-                                .addGap(0, 339, Short.MAX_VALUE))
+                                .addGap(0, 380, Short.MAX_VALUE))
         );
         boardPanelLayout.setVerticalGroup(
                 boardPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
@@ -199,7 +210,7 @@ public class Canvas extends JFrame {
         inputPanel.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
         inputPanel.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 
-        inputArea.setColumns(20);
+        inputArea.setColumns(25);
         inputArea.setLineWrap(true);
         inputArea.setRows(5);
         inputArea.setText("");
@@ -220,7 +231,7 @@ public class Canvas extends JFrame {
         });
 
         userListLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        userListLabel.setText("Participants");
+        userListLabel.setText("Participants:");
         userListLabel.setHorizontalTextPosition(SwingConstants.CENTER);
 
         userList.setModel(new AbstractListModel<String>() {
@@ -254,7 +265,7 @@ public class Canvas extends JFrame {
         );
 
         chatLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        chatLabel.setText("Chat");
+        chatLabel.setText("Messages:");
         chatLabel.setHorizontalTextPosition(SwingConstants.CENTER);
 
         chatList.setModel(new AbstractListModel<String>() {
@@ -282,212 +293,24 @@ public class Canvas extends JFrame {
                                 .addContainerGap())
         );
 
-        menuBar.setMaximumSize(new Dimension(200, 30));
-        menuBar.setMinimumSize(new Dimension(20, 20));
-        menuBar.setPreferredSize(new Dimension(300, 27));
+//        menuBar.setMaximumSize(new Dimension(400, 30));
+//        menuBar.setMinimumSize(new Dimension(400, 20));
+//        menuBar.setPreferredSize(new Dimension(500, 27));
 
         if (!isManager) {
             fileMenu.setVisible(false);
         }
 
-        fileMenu.setText("File");
+        addFileMenu();
 
-        newBoard.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_N, java.awt.event.InputEvent.CTRL_DOWN_MASK));
-//        newBoard.setIcon(new ImageIcon(getClass().getResource("/icon/newboard.png"))); // NOI18N
-        newBoard.setText("New Board");
-        newBoard.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                newBoardActionPerformed(evt);
-            }
-        });
-        fileMenu.add(newBoard);
+        addShapeMenu();
 
-        fileOpen.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_O, java.awt.event.InputEvent.CTRL_DOWN_MASK));
-//        fileOpen.setIcon(new ImageIcon(getClass().getResource("/icon/openfile.png"))); // NOI18N
-        fileOpen.setText("Open");
-        fileOpen.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                fileOpenActionPerformed(evt);
-            }
-        });
-        fileMenu.add(fileOpen);
+        addFreeDraw();
+        addCursorMenu();
+        addTextMenu();
+        addColorMenu();
 
-        fileSave.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.CTRL_DOWN_MASK));
-//        fileSave.setIcon(new ImageIcon(getClass().getResource("/icon/save.png"))); // NOI18N
-        fileSave.setText("Save");
-        fileSave.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                try {
-                    fileSaveActionPerformed(evt);
-                }catch (NullPointerException e){
-
-                }
-            }
-        });
-        fileMenu.add(fileSave);
-
-        fileSaveAs.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_D, java.awt.event.InputEvent.CTRL_DOWN_MASK));
-//        fileSaveAs.setIcon(new ImageIcon(getClass().getResource("/icon/saveas.png"))); // NOI18N
-        fileSaveAs.setText("Save As");
-        fileSaveAs.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                try{
-                    fileSaveAsActionPerformed(evt);
-                }catch (NullPointerException e){
-                }
-            }
-        });
-        fileMenu.add(fileSaveAs);
-
-        fileClose.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_C, java.awt.event.InputEvent.CTRL_DOWN_MASK));
-//        fileClose.setIcon(new ImageIcon(getClass().getResource("/icon/close.png"))); // NOI18N
-        fileClose.setText("Close Board");
-        fileClose.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                fileCloseActionPerformed(evt);
-            }
-        });
-        fileMenu.add(fileClose);
-
-        menuBar.add(fileMenu);
-
-//        shapeMenu.setIcon(new ImageIcon(getClass().getResource("/icon/shape.png"))); // NOI18N
-        shapeMenu.setText("Shape");
-        shapeMenu.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                shapeMenuMouseClicked(evt);
-            }
-        });
-
-        drawLine.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_L, java.awt.event.InputEvent.CTRL_DOWN_MASK));
-        modeGroup.add(drawLine);
-        drawLine.setText("Line");
-//        drawLine.setIcon(new ImageIcon(getClass().getResource("/icon/line.png"))); // NOI18N
-        drawLine.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                drawLineActionPerformed(evt);
-            }
-        });
-        shapeMenu.add(drawLine);
-
-        drawRect.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_R, java.awt.event.InputEvent.CTRL_DOWN_MASK));
-        modeGroup.add(drawRect);
-        drawRect.setText("Rectangle");
-//        drawRect.setIcon(new ImageIcon(getClass().getResource("/icon/rectangle.png"))); // NOI18N
-        drawRect.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                drawRectActionPerformed(evt);
-            }
-        });
-        shapeMenu.add(drawRect);
-
-        drawTri.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_T, java.awt.event.InputEvent.CTRL_DOWN_MASK));
-        modeGroup.add(drawTri);
-        drawTri.setText("Triangle");
-//        drawTri.setIcon(new ImageIcon(getClass().getResource("/icon/triangle.png"))); // NOI18N
-        drawTri.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                drawTriActionPerformed(evt);
-            }
-        });
-        shapeMenu.add(drawTri);
-
-        drawCir.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_C, java.awt.event.InputEvent.CTRL_DOWN_MASK));
-        modeGroup.add(drawCir);
-        drawCir.setText("Circle");
-//        drawCir.setIcon(new ImageIcon(getClass().getResource("/icon/circle.png"))); // NOI18N
-        drawCir.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                drawCirActionPerformed(evt);
-            }
-        });
-        shapeMenu.add(drawCir);
-
-        menuBar.add(shapeMenu);
-
-//        colorMenu.setIcon(new ImageIcon(getClass().getResource("/icon/color.png"))); // NOI18N
-        colorMenu.setText("Color");
-
-//        colorChooser.setIcon(new ImageIcon(getClass().getResource("/icon/choosecolor.png"))); // NOI18N
-        colorChooser.setText("Choose");
-        colorChooser.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                colorChooserActionPerformed(evt);
-            }
-        });
-        colorMenu.add(colorChooser);
-
-        menuBar.add(colorMenu);
-
-//        textMenu.setIcon(new ImageIcon(getClass().getResource("/icon/text.png"))); // NOI18N
-        textMenu.setText("Text");
-
-        modeGroup.add(drawText);
-        drawText.setSelected(false);
-//        drawText.setIcon(new ImageIcon(getClass().getResource("/icon/drawtext.png"))); // NOI18N
-        drawText.setSelected(true);
-        drawText.setText("drawText");
-        drawText.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                drawTextActionPerformed(evt);
-            }
-        });
-        textMenu.add(drawText);
-
-        menuBar.add(textMenu);
-
-//        freeDraw.setIcon(new ImageIcon(getClass().getResource("/icon/drawing.png"))); // NOI18N
-        freeDraw.setText("Drawing");
-
-        modeGroup.add(freeDrawButton);
-        freeDrawButton.setText("Free Draw");
-//        freeDrawButton.setIcon(new ImageIcon(getClass().getResource("/icon/freedraw.png"))); // NOI18N
-        freeDrawButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                freeDrawButtonActionPerformed(evt);
-            }
-        });
-        freeDraw.add(freeDrawButton);
-
-        menuBar.add(freeDraw);
-
-//        cursorMenu.setIcon(new ImageIcon(getClass().getResource("/icon/cursor.png"))); // NOI18N
-        cursorMenu.setText("Cursor");
-
-        modeGroup.add(cursorButton);
-        cursorButton.setText("Mouse");
-//        cursorButton.setIcon(new ImageIcon(getClass().getResource("/icon/cursor.png"))); // NOI18N
-        cursorButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cursorButtonActionPerformed(evt);
-            }
-        });
-        cursorMenu.add(cursorButton);
-
-        menuBar.add(cursorMenu);
-
-        currentTool.setBackground(Color.lightGray);
-        currentTool.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
-        currentTool.setText("current tool");
-        currentTool.setOpaque(true);
-        currentTool.setIcon(cursorMenu.getIcon());
-        // let the current tool be the left most icon
-        JPanel panel = new JPanel();
-        panel.add(Box.createHorizontalGlue());
-        panel.add(currentTool);
-        menuBar.add(Box.createHorizontalGlue());
-        menuBar.add(panel);
-        menuBar.add(currentTool);
-
-
-
-        currentColor.setBackground(Color.lightGray);
-        currentColor.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
-        currentColor.setText("current color");
-        currentColor.setOpaque(true);
-        menuBar.add(currentColor);
-
-        setJMenuBar(menuBar);
+        addCurrentToolAndColor();
 
         GroupLayout layout = new GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -533,6 +356,202 @@ public class Canvas extends JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void addShapeMenu() {
+        shapeMenu.setText("Shape");
+        shapeMenu.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(MouseEvent evt) {
+                shapeMenuMouseClicked(evt);
+            }
+        });
+        drawLine.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_L, java.awt.event.InputEvent.CTRL_DOWN_MASK));
+        modeGroup.add(drawLine);
+        drawLine.setText("Line");
+        drawLine.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                drawLineActionPerformed(evt);
+            }
+        });
+        shapeMenu.add(drawLine);
+
+        drawRect.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, java.awt.event.InputEvent.CTRL_DOWN_MASK));
+        modeGroup.add(drawRect);
+        drawRect.setText("Rectangle");
+//        drawRect.setIcon(new ImageIcon(getClass().getResource("/icon/rectangle.png"))); // NOI18N
+        drawRect.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                drawRectActionPerformed(evt);
+            }
+        });
+        shapeMenu.add(drawRect);
+
+        drawTri.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, java.awt.event.InputEvent.CTRL_DOWN_MASK));
+        modeGroup.add(drawTri);
+        drawTri.setText("Triangle");
+//        drawTri.setIcon(new ImageIcon(getClass().getResource("/icon/triangle.png"))); // NOI18N
+        drawTri.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                drawTriActionPerformed(evt);
+            }
+        });
+        shapeMenu.add(drawTri);
+
+        drawCir.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, java.awt.event.InputEvent.CTRL_DOWN_MASK));
+        modeGroup.add(drawCir);
+        drawCir.setText("Circle");
+//        drawCir.setIcon(new ImageIcon(getClass().getResource("/icon/circle.png"))); // NOI18N
+        drawCir.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                drawCirActionPerformed(evt);
+            }
+        });
+        shapeMenu.add(drawCir);
+        menuBar.add(shapeMenu);
+    }
+
+    private void addFileMenu() {
+        fileMenu.setText("File");
+
+        newBoard.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, java.awt.event.InputEvent.CTRL_DOWN_MASK));
+//        newBoard.setIcon(new ImageIcon(getClass().getResource("/icon/newboard.png"))); // NOI18N
+        newBoard.setText("New Board");
+        newBoard.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                newBoardActionPerformed(evt);
+            }
+        });
+        fileMenu.add(newBoard);
+
+        fileOpen.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, java.awt.event.InputEvent.CTRL_DOWN_MASK));
+//        fileOpen.setIcon(new ImageIcon(getClass().getResource("/icon/openfile.png"))); // NOI18N
+        fileOpen.setText("Open");
+        fileOpen.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                fileOpenActionPerformed(evt);
+            }
+        });
+        fileMenu.add(fileOpen);
+
+        fileSave.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, java.awt.event.InputEvent.CTRL_DOWN_MASK));
+//        fileSave.setIcon(new ImageIcon(getClass().getResource("/icon/save.png"))); // NOI18N
+        fileSave.setText("Save");
+        fileSave.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                try {
+                    fileSaveActionPerformed(evt);
+                }catch (NullPointerException e){
+
+                }
+            }
+        });
+        fileMenu.add(fileSave);
+
+        fileSaveAs.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D, java.awt.event.InputEvent.CTRL_DOWN_MASK));
+//        fileSaveAs.setIcon(new ImageIcon(getClass().getResource("/icon/saveas.png"))); // NOI18N
+        fileSaveAs.setText("Save As");
+        fileSaveAs.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                try{
+                    fileSaveAsActionPerformed(evt);
+                }catch (NullPointerException e){
+                }
+            }
+        });
+        fileMenu.add(fileSaveAs);
+
+        fileClose.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, java.awt.event.InputEvent.CTRL_DOWN_MASK));
+//        fileClose.setIcon(new ImageIcon(getClass().getResource("/icon/close.png"))); // NOI18N
+        fileClose.setText("Close Board");
+        fileClose.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                fileCloseActionPerformed(evt);
+            }
+        });
+        fileMenu.add(fileClose);
+        menuBar.add(fileMenu);
+    }
+
+    private void addCurrentToolAndColor() {
+        currentTool.setBackground(Color.lightGray);
+        currentTool.setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));
+        currentTool.setEnabled(false);
+        currentTool.setText("current tool");
+        currentTool.setOpaque(true);
+        currentTool.setIcon(cursorMenu.getIcon());
+        // let the current tool be the left most icon
+        JPanel panel = new JPanel();
+        panel.add(Box.createHorizontalGlue());
+        panel.add(currentTool);
+        panel.setBackground(Color.white);
+        menuBar.add(Box.createHorizontalGlue());
+        menuBar.add(panel);
+        menuBar.add(currentTool);
+
+
+        currentColor.setBackground(Color.lightGray);
+        currentColor.setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));
+        currentColor.setText("current color");
+        currentColor.setEnabled(false);
+        currentColor.setOpaque(true);
+        menuBar.add(currentColor);
+        setJMenuBar(menuBar);
+    }
+
+    private void addCursorMenu() {
+        cursorMenu.setText("Cursor");
+        modeGroup.add(cursorButton);
+        cursorButton.setText("Mouse");
+        cursorButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                cursorButtonActionPerformed(evt);
+            }
+        });
+        cursorMenu.add(cursorButton);
+        menuBar.add(cursorMenu);
+    }
+
+    private void addFreeDraw() {
+        freeDraw.setText("Drawing");
+        modeGroup.add(freeDrawButton);
+        freeDrawButton.setText("Free Draw");
+        freeDrawButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                freeDrawButtonActionPerformed(evt);
+            }
+        });
+        freeDraw.add(freeDrawButton);
+        menuBar.add(freeDraw);
+    }
+
+    private void addTextMenu() {
+        textMenu.setText("Text");
+        modeGroup.add(drawText);
+        drawText.setSelected(false);
+        drawText.setSelected(true);
+        drawText.setText("drawText");
+        drawText.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                drawTextActionPerformed(evt);
+            }
+        });
+        textMenu.add(drawText);
+
+        menuBar.add(textMenu);
+    }
+
+    private void addColorMenu() {
+        //        colorMenu.setIcon(new ImageIcon(getClass().getResource("/icon/color.png"))); // NOI18N
+        colorMenu.setText("Color");
+//        colorChooser.setIcon(new ImageIcon(getClass().getResource("/icon/choosecolor.png"))); // NOI18N
+        colorChooser.setText("Choose");
+        colorChooser.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                colorChooserActionPerformed(evt);
+            }
+        });
+        colorMenu.add(colorChooser);
+        menuBar.add(colorMenu);
+    }
 
     private void boardPanelKeyTyped(KeyEvent evt) {
     }
