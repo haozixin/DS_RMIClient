@@ -1,19 +1,30 @@
 
 import remote.IRemoteBoard;
+import remote.IRemoteClient;
 
 import java.rmi.Naming;
+import java.rmi.RemoteException;
 
 
-public class RMIClient {
+public class CreateWhiteBoard {
     public static void main(String[] args) {
+        System.out.println("CreateWhiteBoard.main");
         String hostName = "localhost";
         String serviceName = "HelloWorldService";
         int port = 8000;
-        String who = "Bobo";
+        String userName = "Anonymous";
+
+        IRemoteClient who = null;
+        try {
+            who = new ClientServant();
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
+
         if (args.length == 3) {
             hostName = args[0];
             serviceName = args[1];
-            who = args[2];
+            userName = args[2];
         }
         else if (args.length == 1) {
             hostName = args[0];
