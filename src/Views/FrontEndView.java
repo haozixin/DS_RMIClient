@@ -1,17 +1,15 @@
+package Views;
+
+import Views.CanvasPanel;
 import remote.IRemoteBoard;
 
 import javax.swing.*;
 import javax.swing.border.BevelBorder;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.rmi.RemoteException;
 
-public class Canvas extends JFrame {
+public class FrontEndView extends JFrame {
     private String mode;
     private Point start;
     private Point end;
@@ -30,7 +28,6 @@ public class Canvas extends JFrame {
     private Color color;
     private Color remoteColor;
     DefaultListModel chatModel;
-    Graphics g;
     private boolean isManager=true;
     private String fileName;
     private BufferedImage image;
@@ -39,7 +36,8 @@ public class Canvas extends JFrame {
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private JPanel boardPanel;
+    private CanvasPanel boardPanel = new CanvasPanel();
+    Graphics2D g;
     private JScrollPane chatBoxPanel;
     private JLabel chatLabel;
     private JList<String> chatList;
@@ -81,37 +79,76 @@ public class Canvas extends JFrame {
     /**
      * Creates new form BoardClient
      */
-    public Canvas(){
+    public FrontEndView(){
         super.setTitle("ZX Share White Board ~_~");
         initComponents();
         this.getContentPane().setBackground(Color.white);
-        boardPanel.setBorder(new BevelBorder(BevelBorder.LOWERED));
         listPanel.setBackground(Color.white);
         chatPanel.setBackground(Color.white);
         menuBar.setBackground(Color.white);
         menuBar.setBorder(new BevelBorder(BevelBorder.RAISED));
 
-
-
-
-
-//        mode = "";
-//        remoteStart = new Point(0, 0);
-//        remoteEnd = new Point(0, 0);
-//        start = new Point(0, 0);
-//        end = new Point(0, 0);
-//        this.name = name;
-//        userList = new JList<>();
-//        color = new Color(0, 0, 0);
-//        remoteColor = new Color(0, 0, 0);
-//        chatModel = new DefaultListModel();
-
-//        fileName = null;
-//        image  = new BufferedImage(boardPanel.getWidth(), boardPanel.getHeight(), BufferedImage.TYPE_INT_RGB);
-//        g = image.createGraphics();
-//        g.setColor(Color.white);
-//        g.fillRect(0, 0, boardPanel.getWidth(), boardPanel.getHeight());
+        mode = "";
+        remoteStart = new Point(0, 0);
+        remoteEnd = new Point(0, 0);
+        start = new Point(0, 0);
+        end = new Point(0, 0);
+        this.name = name;
+        userList = new JList<>();
+        color = new Color(0, 0, 0);
+        remoteColor = new Color(0, 0, 0);
+        chatModel = new DefaultListModel();
+        fileName = null;
+        setImage();
     }
+
+    private void setImage() {
+
+        image  = new BufferedImage(800, 800, BufferedImage.TYPE_INT_RGB);
+        g = image.createGraphics();
+        g.setColor(Color.white);
+        g.fillRect(0, 0, 800, 800);
+    }
+
+    public Point startPoint(){
+        Point startPoint = new Point();
+        startPoint.x = Math.min(start.x, end.x);
+        startPoint.y = Math.min(start.y, end.y);
+        return startPoint;
+    }
+
+    private void draw(){
+
+        g.setColor(color);
+        g.setStroke(new BasicStroke(2));
+        switch (mode) {
+            case FREEDRAW -> g.drawLine(start.x, start.y, end.x, end.y);
+            case DRAWLINE -> g.drawLine(start.x, start.y, end.x, end.y);
+            case DRAWREC ->
+                    g.drawRect(startPoint().x, startPoint().y, Math.abs(start.x - end.x), Math.abs(start.y - end.y));
+            case DRAWCIRCLE ->
+                    g.drawOval(startPoint().x, startPoint().y, Math.abs(start.x - end.x), Math.abs(start.y - end.y));
+            case DRAWTRI -> {
+                int[] xPoints = {start.x, end.x, Math.min(start.x, end.x) - Math.abs(start.x - end.x)};
+                int[] yPoints = {start.y, end.y, end.y};
+                g.drawPolygon(xPoints, yPoints, 3);
+            }
+            case DRAWTEXT -> {
+                textDraw = JOptionPane.showInputDialog(null, "Please input text");
+                if (textDraw != null) {
+                    g.drawString(textDraw, start.x, start.y);
+                }
+            }
+        }
+        boardPanel.getGraphics().drawImage(image, 0, 0, null);
+    }
+
+//    protected void paintComponent(Graphics g) {
+//        super.paintComponent(g);
+//        boardPanel.getGraphics().drawImage(image, 0, 0, null);
+//    }
+
+
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -123,7 +160,7 @@ public class Canvas extends JFrame {
     private void initComponents() {
 
         modeGroup = new ButtonGroup();
-        boardPanel = new JPanel();
+        boardPanel = new CanvasPanel();
         drawLabel = new JLabel();
         inputPanel = new JScrollPane();
         inputArea = new JTextArea();
@@ -160,7 +197,7 @@ public class Canvas extends JFrame {
         currentTool = new JMenu();
         currentColor = new JMenu();
 
-        setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 formWindowClosing(evt);
@@ -168,11 +205,7 @@ public class Canvas extends JFrame {
         });
 
         boardPanel.setBackground(new Color(255, 255, 255));
-        boardPanel.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
-            public void mouseDragged(java.awt.event.MouseEvent evt) {
-                boardPanelMouseDragged(evt);
-            }
-        });
+        addListenersForBoardPanel();
         boardPanel.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(MouseEvent evt) {
                 boardPanelMouseClicked(evt);
@@ -198,7 +231,7 @@ public class Canvas extends JFrame {
                 boardPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
                         .addGroup(boardPanelLayout.createSequentialGroup()
                                 .addComponent(drawLabel)
-                                .addGap(0, 380, Short.MAX_VALUE))
+                                .addGap(0, 339, Short.MAX_VALUE))
         );
         boardPanelLayout.setVerticalGroup(
                 boardPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
@@ -293,9 +326,9 @@ public class Canvas extends JFrame {
                                 .addContainerGap())
         );
 
-//        menuBar.setMaximumSize(new Dimension(400, 30));
-//        menuBar.setMinimumSize(new Dimension(400, 20));
-//        menuBar.setPreferredSize(new Dimension(500, 27));
+        menuBar.setMaximumSize(new Dimension(400, 30));
+        menuBar.setMinimumSize(new Dimension(400, 20));
+        menuBar.setPreferredSize(new Dimension(500, 27));
 
         if (!isManager) {
             fileMenu.setVisible(false);
@@ -346,7 +379,7 @@ public class Canvas extends JFrame {
                                 .addComponent(listPanel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(chatPanel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addGap(18, 18, 18)
+                                .addGap(15, 15, 15)
                                 .addComponent(inputPanel)
                                 .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
@@ -356,6 +389,18 @@ public class Canvas extends JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void addListenersForBoardPanel() {
+        boardPanel.addMouseMotionListener(new MouseMotionAdapter() {
+            public void mouseDragged(MouseEvent evt) {
+                boardPanelMouseDragged(evt);
+            }
+            public void mouseMoved(MouseEvent e) {
+                start.x = e.getX();
+                start.y = e.getY();
+            }
+        });
+    }
 
     private void addShapeMenu() {
         shapeMenu.setText("Shape");
@@ -377,7 +422,6 @@ public class Canvas extends JFrame {
         drawRect.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, java.awt.event.InputEvent.CTRL_DOWN_MASK));
         modeGroup.add(drawRect);
         drawRect.setText("Rectangle");
-//        drawRect.setIcon(new ImageIcon(getClass().getResource("/icon/rectangle.png"))); // NOI18N
         drawRect.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(ActionEvent evt) {
                 drawRectActionPerformed(evt);
@@ -388,7 +432,6 @@ public class Canvas extends JFrame {
         drawTri.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, java.awt.event.InputEvent.CTRL_DOWN_MASK));
         modeGroup.add(drawTri);
         drawTri.setText("Triangle");
-//        drawTri.setIcon(new ImageIcon(getClass().getResource("/icon/triangle.png"))); // NOI18N
         drawTri.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(ActionEvent evt) {
                 drawTriActionPerformed(evt);
@@ -399,7 +442,6 @@ public class Canvas extends JFrame {
         drawCir.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, java.awt.event.InputEvent.CTRL_DOWN_MASK));
         modeGroup.add(drawCir);
         drawCir.setText("Circle");
-//        drawCir.setIcon(new ImageIcon(getClass().getResource("/icon/circle.png"))); // NOI18N
         drawCir.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(ActionEvent evt) {
                 drawCirActionPerformed(evt);
@@ -413,7 +455,6 @@ public class Canvas extends JFrame {
         fileMenu.setText("File");
 
         newBoard.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, java.awt.event.InputEvent.CTRL_DOWN_MASK));
-//        newBoard.setIcon(new ImageIcon(getClass().getResource("/icon/newboard.png"))); // NOI18N
         newBoard.setText("New Board");
         newBoard.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(ActionEvent evt) {
@@ -423,7 +464,6 @@ public class Canvas extends JFrame {
         fileMenu.add(newBoard);
 
         fileOpen.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, java.awt.event.InputEvent.CTRL_DOWN_MASK));
-//        fileOpen.setIcon(new ImageIcon(getClass().getResource("/icon/openfile.png"))); // NOI18N
         fileOpen.setText("Open");
         fileOpen.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(ActionEvent evt) {
@@ -433,7 +473,6 @@ public class Canvas extends JFrame {
         fileMenu.add(fileOpen);
 
         fileSave.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, java.awt.event.InputEvent.CTRL_DOWN_MASK));
-//        fileSave.setIcon(new ImageIcon(getClass().getResource("/icon/save.png"))); // NOI18N
         fileSave.setText("Save");
         fileSave.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(ActionEvent evt) {
@@ -447,7 +486,6 @@ public class Canvas extends JFrame {
         fileMenu.add(fileSave);
 
         fileSaveAs.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D, java.awt.event.InputEvent.CTRL_DOWN_MASK));
-//        fileSaveAs.setIcon(new ImageIcon(getClass().getResource("/icon/saveas.png"))); // NOI18N
         fileSaveAs.setText("Save As");
         fileSaveAs.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(ActionEvent evt) {
@@ -460,7 +498,6 @@ public class Canvas extends JFrame {
         fileMenu.add(fileSaveAs);
 
         fileClose.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, java.awt.event.InputEvent.CTRL_DOWN_MASK));
-//        fileClose.setIcon(new ImageIcon(getClass().getResource("/icon/close.png"))); // NOI18N
         fileClose.setText("Close Board");
         fileClose.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(ActionEvent evt) {
@@ -540,9 +577,7 @@ public class Canvas extends JFrame {
     }
 
     private void addColorMenu() {
-        //        colorMenu.setIcon(new ImageIcon(getClass().getResource("/icon/color.png"))); // NOI18N
         colorMenu.setText("Color");
-//        colorChooser.setIcon(new ImageIcon(getClass().getResource("/icon/choosecolor.png"))); // NOI18N
         colorChooser.setText("Choose");
         colorChooser.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(ActionEvent evt) {
@@ -613,7 +648,9 @@ public class Canvas extends JFrame {
     }
 
     private void freeDrawButtonActionPerformed(ActionEvent evt) {
-        
+        mode = FREEDRAW;
+        currentTool.setText(mode);
+        currentColor.setBackground(color);
     }
 
     private void fileOpenActionPerformed(ActionEvent evt) {
@@ -637,6 +674,11 @@ public class Canvas extends JFrame {
     }
 
     private void boardPanelMouseDragged(MouseEvent evt) {
+        if (mode.equals(FREEDRAW)) {
+            end.setLocation(evt.getX(), evt.getY());
+            draw();
+            start = end;
+        }
         
     }
 

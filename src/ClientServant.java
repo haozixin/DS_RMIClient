@@ -1,10 +1,11 @@
+import Views.FrontEndView;
 import remote.IRemoteClient;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 
 public class ClientServant extends UnicastRemoteObject implements IRemoteClient {
-    private Canvas whiteBoard;
+    private FrontEndView whiteBoard;
 
     protected ClientServant() throws RemoteException {
         startCanvas();
@@ -17,10 +18,12 @@ public class ClientServant extends UnicastRemoteObject implements IRemoteClient 
 
     @Override
     public void startCanvas() throws RemoteException {
-        whiteBoard = new Canvas();
+        whiteBoard = new FrontEndView();
+//        whiteBoard.setMinimumSize(new java.awt.Dimension(1000, 550));
+        whiteBoard.setSize(710,500);
         whiteBoard.setVisible(true);
-        whiteBoard.setSize(730,550);
-        whiteBoard.setResizable(false);
+//        whiteBoard.setResizable(false);
+
     }
 
 
