@@ -5,11 +5,13 @@ import utils.PropertiesUtil;
 
 import java.rmi.Naming;
 import java.rmi.RemoteException;
+import java.util.Locale;
 
 
 public class CreateWhiteBoard {
     private static final String S = "serviceName";
     public static void main(String[] args) {
+        Locale.setDefault(Locale.ENGLISH);
         String hostName = "localhost";
         int port = 8000;
 

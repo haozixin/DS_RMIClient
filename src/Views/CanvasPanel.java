@@ -7,7 +7,7 @@ import java.awt.image.BufferedImage;
 
 public class CanvasPanel extends JPanel{
     private String textDraw = "";
-    private final Color color = Color.black;
+    private Color color = Color.black;
     public String mode = "";
     public final String DRAWLINE = "drawLine";
     public final String FREEDRAW = "freeDraw";
@@ -50,6 +50,10 @@ public class CanvasPanel extends JPanel{
 
     public Color getColor() {
         return color;
+    }
+
+    public void setColor(Color color) {
+        this.color = color;
     }
 
     public Point startPoint(){

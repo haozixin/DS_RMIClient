@@ -488,9 +488,10 @@ public class FrontEndView extends JFrame {
     private void addColorMenu() {
         colorMenu.setText("Color");
         colorChooser.setText("Choose");
-        colorChooser.addActionListener(new java.awt.event.ActionListener() {
+        colorChooser.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
-                colorChooserActionPerformed(evt);
+                boardPanel.setColor(JColorChooser.showDialog(null, "Choose a color", Color.black));
+                currentColor.setBackground(boardPanel.getColor());
             }
         });
         colorMenu.add(colorChooser);
@@ -545,7 +546,7 @@ public class FrontEndView extends JFrame {
     }
 
     private void colorChooserActionPerformed(ActionEvent evt) {
-        
+
     }
 
     private void cursorButtonActionPerformed(ActionEvent evt) {
@@ -570,17 +571,6 @@ public class FrontEndView extends JFrame {
         
     }
 
-    private void boardPanelMouseReleased(MouseEvent evt) {
-        
-    }
-
-    private void boardPanelMousePressed(MouseEvent evt) {
-        
-    }
-
-    private void boardPanelMouseClicked(MouseEvent evt) {
-        
-    }
 
     private void formWindowClosing(WindowEvent evt) {
         // ask for confirmation
