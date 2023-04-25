@@ -10,34 +10,21 @@ import java.awt.event.*;
 import java.awt.image.BufferedImage;
 
 public class FrontEndView extends JFrame {
-    private String mode;
-    private Point start;
-    private Point end;
+
     private Point remoteStart;
     private Point remoteEnd;
     private String remoteMode;
     private IRemoteBoard remoteBoard;
-    public final String DRAWLINE = "drawLine";
-    public final String FREEDRAW = "freeDraw";
-    public final String DRAWREC = "drawRec";
-    public final String DRAWCIRCLE = "drawCircle";
-    public final String DRAWTRI = "drawTri";
-    public final String DRAWTEXT = "drawText";
-    public final String NOTHING = "";
     private String name;
-    private Color color;
+//    private Color color;
     private Color remoteColor;
     DefaultListModel chatModel;
     private boolean isManager=true;
     private String fileName;
-    private BufferedImage image;
-    private String textDraw;
-    private String remoteTextDraw;
-
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private CanvasPanel boardPanel = new CanvasPanel();
-    Graphics2D g;
+
     private JScrollPane chatBoxPanel;
     private JLabel chatLabel;
     private JList<String> chatList;
@@ -87,68 +74,15 @@ public class FrontEndView extends JFrame {
         chatPanel.setBackground(Color.white);
         menuBar.setBackground(Color.white);
         menuBar.setBorder(new BevelBorder(BevelBorder.RAISED));
-
-        mode = "";
         remoteStart = new Point(0, 0);
         remoteEnd = new Point(0, 0);
-        start = new Point(0, 0);
-        end = new Point(0, 0);
         this.name = name;
         userList = new JList<>();
-        color = new Color(0, 0, 0);
         remoteColor = new Color(0, 0, 0);
         chatModel = new DefaultListModel();
         fileName = null;
-        setImage();
+
     }
-
-    private void setImage() {
-
-        image  = new BufferedImage(800, 800, BufferedImage.TYPE_INT_RGB);
-        g = image.createGraphics();
-        g.setColor(Color.white);
-        g.fillRect(0, 0, 800, 800);
-    }
-
-    public Point startPoint(){
-        Point startPoint = new Point();
-        startPoint.x = Math.min(start.x, end.x);
-        startPoint.y = Math.min(start.y, end.y);
-        return startPoint;
-    }
-
-    private void draw(){
-
-        g.setColor(color);
-        g.setStroke(new BasicStroke(2));
-        switch (mode) {
-            case FREEDRAW -> g.drawLine(start.x, start.y, end.x, end.y);
-            case DRAWLINE -> g.drawLine(start.x, start.y, end.x, end.y);
-            case DRAWREC ->
-                    g.drawRect(startPoint().x, startPoint().y, Math.abs(start.x - end.x), Math.abs(start.y - end.y));
-            case DRAWCIRCLE ->
-                    g.drawOval(startPoint().x, startPoint().y, Math.abs(start.x - end.x), Math.abs(start.y - end.y));
-            case DRAWTRI -> {
-                int[] xPoints = {start.x, end.x, Math.min(start.x, end.x) - Math.abs(start.x - end.x)};
-                int[] yPoints = {start.y, end.y, end.y};
-                g.drawPolygon(xPoints, yPoints, 3);
-            }
-            case DRAWTEXT -> {
-                textDraw = JOptionPane.showInputDialog(null, "Please input text");
-                if (textDraw != null) {
-                    g.drawString(textDraw, start.x, start.y);
-                }
-            }
-        }
-        boardPanel.getGraphics().drawImage(image, 0, 0, null);
-    }
-
-//    protected void paintComponent(Graphics g) {
-//        super.paintComponent(g);
-//        boardPanel.getGraphics().drawImage(image, 0, 0, null);
-//    }
-
-
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -160,7 +94,6 @@ public class FrontEndView extends JFrame {
     private void initComponents() {
 
         modeGroup = new ButtonGroup();
-        boardPanel = new CanvasPanel();
         drawLabel = new JLabel();
         inputPanel = new JScrollPane();
         inputArea = new JTextArea();
@@ -204,19 +137,6 @@ public class FrontEndView extends JFrame {
             }
         });
 
-        boardPanel.setBackground(new Color(255, 255, 255));
-        addListenersForBoardPanel();
-        boardPanel.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(MouseEvent evt) {
-                boardPanelMouseClicked(evt);
-            }
-            public void mousePressed(MouseEvent evt) {
-                boardPanelMousePressed(evt);
-            }
-            public void mouseReleased(MouseEvent evt) {
-                boardPanelMouseReleased(evt);
-            }
-        });
         boardPanel.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyTyped(java.awt.event.KeyEvent evt) {
                 boardPanelKeyTyped(evt);
@@ -390,17 +310,6 @@ public class FrontEndView extends JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void addListenersForBoardPanel() {
-        boardPanel.addMouseMotionListener(new MouseMotionAdapter() {
-            public void mouseDragged(MouseEvent evt) {
-                boardPanelMouseDragged(evt);
-            }
-            public void mouseMoved(MouseEvent e) {
-                start.x = e.getX();
-                start.y = e.getY();
-            }
-        });
-    }
 
     private void addShapeMenu() {
         shapeMenu.setText("Shape");
@@ -551,7 +460,7 @@ public class FrontEndView extends JFrame {
         freeDraw.setText("Drawing");
         modeGroup.add(freeDrawButton);
         freeDrawButton.setText("Free Draw");
-        freeDrawButton.addActionListener(new java.awt.event.ActionListener() {
+        freeDrawButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
                 freeDrawButtonActionPerformed(evt);
             }
@@ -648,9 +557,9 @@ public class FrontEndView extends JFrame {
     }
 
     private void freeDrawButtonActionPerformed(ActionEvent evt) {
-        mode = FREEDRAW;
-        currentTool.setText(mode);
-        currentColor.setBackground(color);
+        boardPanel.setMode(boardPanel.FREEDRAW);
+        currentTool.setText(boardPanel.FREEDRAW);
+        currentColor.setBackground(boardPanel.getColor());
     }
 
     private void fileOpenActionPerformed(ActionEvent evt) {
@@ -673,16 +582,16 @@ public class FrontEndView extends JFrame {
         
     }
 
-    private void boardPanelMouseDragged(MouseEvent evt) {
-        if (mode.equals(FREEDRAW)) {
-            end.setLocation(evt.getX(), evt.getY());
-            draw();
-            start = end;
-        }
-        
-    }
-
     private void formWindowClosing(WindowEvent evt) {
+        // ask for confirmation
+        int result = JOptionPane.showConfirmDialog(this, "Are you sure to close the board?", "Confirm", JOptionPane.YES_NO_OPTION);
+        if (result == JOptionPane.YES_OPTION) {
+            // close
+            System.exit(0);
+        } else {
+            // do nothing
+            setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+        }
     }
 
 }
