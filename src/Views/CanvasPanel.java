@@ -10,12 +10,12 @@ public class CanvasPanel extends JPanel{
     private String textDraw = "";
     private Color color = Color.black;
     public String mode = "";
-    public final String DRAWLINE = "drawLine";
+    public final String DRAWLINE = "straight Line";
     public final String FREEDRAW = "freeDraw";
-    public final String DRAWREC = "drawRec";
-    public final String DRAWCIRCLE = "drawCircle";
-    public final String DRAWTRI = "drawTri";
-    public final String DRAWTEXT = "drawText";
+    public final String DRAWRECT = "rectangle";
+    public final String DRAWOVAL = "Oval";
+    public final String DRAWCIRCLE = "Circle";
+    public final String DRAWTEXT = "Text";
     private Point start = new Point(0,0);
     private final Point end = new Point(0,0);
     private final BufferedImage bufferedImage;
@@ -32,6 +32,14 @@ public class CanvasPanel extends JPanel{
         this.addMouseListener(new myMouseAdapter());
     }
 
+    /**
+     * The paintComponent() method is a method used to paint graphics in Swing components.
+     * It is called automatically when the component needs to be painted, such as when the component is first displayed,
+     * when its size, position, background color, and other properties change, or when the repaint() method is called.
+     * Whenever a component needs to be repainted, Swing automatically calls the paintComponent() method to complete the painting operation.
+     *
+     * @param g the <code>Graphics</code> object to protect
+     */
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         g.drawImage(bufferedImage, 0, 0, null);
@@ -57,37 +65,46 @@ public class CanvasPanel extends JPanel{
     }
 
     private void draw(){
-
         graphics2D.setColor(color);
         graphics2D.setStroke(new BasicStroke(2));
-        switch (mode) {
-            case FREEDRAW -> graphics2D.drawLine(start.x, start.y, end.x, end.y);
-            case DRAWLINE -> graphics2D.drawLine(start.x, start.y, end.x, end.y);
-//            case DRAWREC ->
-//                    graphics2D.drawRect(startPoint().x, startPoint().y, Math.abs(start.x - end.x), Math.abs(start.y - end.y));
-//            case DRAWCIRCLE ->
-//                    graphics2D.drawOval(startPoint().x, startPoint().y, Math.abs(start.x - end.x), Math.abs(start.y - end.y));
-//            case DRAWTRI -> {
-//                int[] xPoints = {start.x, end.x, Math.min(start.x, end.x) - Math.abs(start.x - end.x)};
-//                int[] yPoints = {start.y, end.y, end.y};
-//                graphics2D.drawPolygon(xPoints, yPoints, 3);
-//            }
-//            case DRAWTEXT -> {
-//                textDraw = JOptionPane.showInputDialog(null, "Please input text");
-//                if (textDraw != null) {
-//                    graphics2D.drawString(textDraw, start.x, start.y);
-//                }
-//            }
-        }
+        graphicDraw(graphics2D);
         this.getGraphics().drawImage(bufferedImage, 0, 0, null);
     }
 
+    private void graphicDraw(Graphics g) {
+        switch (mode) {
+            case FREEDRAW -> g.drawLine(start.x, start.y, end.x, end.y);
+            case DRAWLINE -> g.drawLine(start.x, start.y, end.x, end.y);
+            case DRAWRECT ->
+                    g.drawRect(startPoint().x, startPoint().y, Math.abs(start.x - end.x), Math.abs(start.y - end.y));
+            case DRAWOVAL ->
+                    g.drawOval(startPoint().x, startPoint().y, Math.abs(start.x - end.x), Math.abs(start.y - end.y));
+            case DRAWCIRCLE -> {
+                int radius = (int) Math.sqrt(Math.pow(start.x - end.x, 2) + Math.pow(start.y - end.y, 2));
+                g.drawOval(startPoint().x, startPoint().y, radius, radius);
+            }
+            case DRAWTEXT -> {
+                textDraw = JOptionPane.showInputDialog(null, "Please input text");
+                if (textDraw != null) {
+                    graphics2D.drawString(textDraw, start.x, start.y);
+                }
+            }
+        }
+    }
+
+    /**
+     * A method to draw the image currently in the buffer onto the panel, it will be called by the system
+     * when the panel needs to be redrawn, e.g. when it is made visible or moved.
+     * repaint() will also cause this method to be called.
+     * This can be used to do the pre-draw lines, because every shapes and lines made here will be deleted once other actions happen.
+     * @param g  the <code>Graphics</code> context in which to paint
+     */
     public void paint(Graphics g) {
         super.paint(g);
         g.setColor(color);
         g.drawImage(bufferedImage, 0, 0, null);
         if (isDrawing) {
-            g.drawLine(start.x, start.y, end.x, end.y);
+            graphicDraw(g);
         }
     }
 
@@ -96,16 +113,12 @@ public class CanvasPanel extends JPanel{
     private class myMotionAdapter implements MouseMotionListener {
         @Override
         public void mouseDragged(MouseEvent e) {
-
+            end.setLocation(e.getX(), e.getY());
             if (mode.equals(FREEDRAW)) {
-                end.setLocation(e.getX(), e.getY());
                 draw();
                 start.setLocation(end);
-                System.out.println("freedraw - mouse drag - start: " + start + " end: " + end);
             }
-            if (mode.equals(DRAWLINE)) {
-                System.out.println("line - mouse drag - start: " + start + " end: " + end);
-                end.setLocation(e.getX(), e.getY());
+            if (mode.equals(DRAWLINE) || mode.equals(DRAWOVAL) || mode.equals(DRAWRECT)||mode.equals(DRAWCIRCLE)||mode.equals(DRAWTEXT) ){
                 repaint();
             }
         }
@@ -125,23 +138,17 @@ public class CanvasPanel extends JPanel{
 
         @Override
         public void mousePressed(MouseEvent e) {
-
-            if (mode.equals(DRAWLINE)){
-                start.setLocation(e.getX(), e.getY());
-                end.setLocation(e.getX(), e.getY());
-                System.out.println("line - mouse press - start: " + start + " end: " + end);
+            start.setLocation(e.getX(), e.getY());
+            end.setLocation(e.getX(), e.getY());
+            if (mode.equals(DRAWLINE) || mode.equals(DRAWOVAL) || mode.equals(DRAWRECT) || mode.equals(DRAWCIRCLE)){
                 isDrawing = true;
             }
-
-
         }
 
         @Override
         public void mouseReleased(MouseEvent e) {
-
-
-            if (mode.equals(DRAWLINE)){
-                end.setLocation(e.getX(), e.getY());
+            end.setLocation(e.getX(), e.getY());
+            if (mode.equals(DRAWLINE)|| mode.equals(DRAWOVAL) || mode.equals(DRAWRECT)|| mode.equals(DRAWCIRCLE)||mode.equals(DRAWTEXT)){
                 draw();
                 isDrawing = false;
             }

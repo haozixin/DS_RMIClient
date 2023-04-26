@@ -1,13 +1,11 @@
 package Views;
 
-import Views.CanvasPanel;
 import remote.IRemoteBoard;
 
 import javax.swing.*;
 import javax.swing.border.BevelBorder;
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.image.BufferedImage;
 
 public class FrontEndView extends JFrame {
 
@@ -36,12 +34,12 @@ public class FrontEndView extends JFrame {
     private JMenu currentTool;
     private JRadioButtonMenuItem cursorButton;
     private JMenu cursorMenu;
-    private JRadioButtonMenuItem drawCir;
+    private JRadioButtonMenuItem drawOval;
     private JLabel drawLabel;
     private JRadioButtonMenuItem drawLine;
     private JRadioButtonMenuItem drawRect;
     private JRadioButtonMenuItem drawText;
-    private JRadioButtonMenuItem drawTri;
+    private JRadioButtonMenuItem drawCir;
     private JMenuItem fileClose;
     private JMenu fileMenu;
     private JMenuItem fileOpen;
@@ -116,8 +114,8 @@ public class FrontEndView extends JFrame {
         shapeMenu = new JMenu();
         drawLine = new JRadioButtonMenuItem();
         drawRect = new JRadioButtonMenuItem();
-        drawTri = new JRadioButtonMenuItem();
         drawCir = new JRadioButtonMenuItem();
+        drawOval = new JRadioButtonMenuItem();
         colorChooser = new JMenuItem();
         textMenu = new JMenu();
         drawText = new JRadioButtonMenuItem();
@@ -322,7 +320,7 @@ public class FrontEndView extends JFrame {
         // =========================================================
         drawRect.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, java.awt.event.InputEvent.CTRL_DOWN_MASK));
         modeGroup.add(drawRect);
-        drawRect.setText("Rectangle");
+        drawRect.setText(boardPanel.DRAWRECT);
         drawRect.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(ActionEvent evt) {
                 drawRectActionPerformed(evt);
@@ -331,26 +329,26 @@ public class FrontEndView extends JFrame {
         shapeMenu.add(drawRect);
 
         // =========================================================
-        drawTri.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, java.awt.event.InputEvent.CTRL_DOWN_MASK));
-        modeGroup.add(drawTri);
-        drawTri.setText("Triangle");
-        drawTri.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
-                drawTriActionPerformed(evt);
-            }
-        });
-        shapeMenu.add(drawTri);
-
-        // =========================================================
-        drawCir.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, java.awt.event.InputEvent.CTRL_DOWN_MASK));
+        drawCir.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, java.awt.event.InputEvent.CTRL_DOWN_MASK));
         modeGroup.add(drawCir);
-        drawCir.setText("Circle");
+        drawCir.setText(boardPanel.DRAWCIRCLE);
         drawCir.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(ActionEvent evt) {
-                drawCirActionPerformed(evt);
+                drawCircleActionPerformed(evt);
             }
         });
         shapeMenu.add(drawCir);
+
+        // =========================================================
+        drawOval.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, java.awt.event.InputEvent.CTRL_DOWN_MASK));
+        modeGroup.add(drawOval);
+        drawOval.setText(boardPanel.DRAWOVAL);
+        drawOval.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                drawOvalActionPerformed(evt);
+            }
+        });
+        shapeMenu.add(drawOval);
 
         // =========================================================
         modeGroup.add(freeDrawButton);
@@ -389,11 +387,7 @@ public class FrontEndView extends JFrame {
         fileSave.setText("Save");
         fileSave.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(ActionEvent evt) {
-                try {
-                    fileSaveActionPerformed(evt);
-                }catch (NullPointerException e){
-
-                }
+                fileSaveActionPerformed(evt);
             }
         });
         fileMenu.add(fileSave);
@@ -402,10 +396,7 @@ public class FrontEndView extends JFrame {
         fileSaveAs.setText("Save As");
         fileSaveAs.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(ActionEvent evt) {
-                try{
                     fileSaveAsActionPerformed(evt);
-                }catch (NullPointerException e){
-                }
             }
         });
         fileMenu.add(fileSaveAs);
@@ -516,8 +507,10 @@ public class FrontEndView extends JFrame {
     }
 
 
-    private void drawTriActionPerformed(ActionEvent evt) {
-
+    private void drawCircleActionPerformed(ActionEvent evt) {
+        boardPanel.setMode(boardPanel.DRAWCIRCLE);
+        currentTool.setText(boardPanel.DRAWCIRCLE);
+        currentColor.setBackground(boardPanel.getColor());
     }
 
     /**
@@ -531,11 +524,15 @@ public class FrontEndView extends JFrame {
     }
 
     private void drawRectActionPerformed(ActionEvent evt) {
-        
+        boardPanel.setMode(boardPanel.DRAWRECT);
+        currentTool.setText(boardPanel.DRAWRECT);
+        currentColor.setBackground(boardPanel.getColor());
     }
 
-    private void drawCirActionPerformed(ActionEvent evt) {
-        
+    private void drawOvalActionPerformed(ActionEvent evt) {
+        boardPanel.setMode(boardPanel.DRAWOVAL);
+        currentTool.setText(boardPanel.DRAWOVAL);
+        currentColor.setBackground(boardPanel.getColor());
     }
 
 
@@ -544,7 +541,9 @@ public class FrontEndView extends JFrame {
     }
 
     private void drawTextActionPerformed(ActionEvent evt) {
-        
+        boardPanel.setMode(boardPanel.DRAWTEXT);
+        currentTool.setText(boardPanel.DRAWTEXT);
+        currentColor.setBackground(boardPanel.getColor());
     }
 
     private void freeDrawButtonActionPerformed(ActionEvent evt) {
