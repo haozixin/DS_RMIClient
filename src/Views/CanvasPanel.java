@@ -16,7 +16,6 @@ public class CanvasPanel extends JPanel{
     public final String DRAWCIRCLE = "drawCircle";
     public final String DRAWTRI = "drawTri";
     public final String DRAWTEXT = "drawText";
-    public final String NOTHING = "";
     private Point start = new Point(0,0);
     private final Point end = new Point(0,0);
     private final BufferedImage bufferedImage;
@@ -64,21 +63,21 @@ public class CanvasPanel extends JPanel{
         switch (mode) {
             case FREEDRAW -> graphics2D.drawLine(start.x, start.y, end.x, end.y);
             case DRAWLINE -> graphics2D.drawLine(start.x, start.y, end.x, end.y);
-            case DRAWREC ->
-                    graphics2D.drawRect(startPoint().x, startPoint().y, Math.abs(start.x - end.x), Math.abs(start.y - end.y));
-            case DRAWCIRCLE ->
-                    graphics2D.drawOval(startPoint().x, startPoint().y, Math.abs(start.x - end.x), Math.abs(start.y - end.y));
-            case DRAWTRI -> {
-                int[] xPoints = {start.x, end.x, Math.min(start.x, end.x) - Math.abs(start.x - end.x)};
-                int[] yPoints = {start.y, end.y, end.y};
-                graphics2D.drawPolygon(xPoints, yPoints, 3);
-            }
-            case DRAWTEXT -> {
-                textDraw = JOptionPane.showInputDialog(null, "Please input text");
-                if (textDraw != null) {
-                    graphics2D.drawString(textDraw, start.x, start.y);
-                }
-            }
+//            case DRAWREC ->
+//                    graphics2D.drawRect(startPoint().x, startPoint().y, Math.abs(start.x - end.x), Math.abs(start.y - end.y));
+//            case DRAWCIRCLE ->
+//                    graphics2D.drawOval(startPoint().x, startPoint().y, Math.abs(start.x - end.x), Math.abs(start.y - end.y));
+//            case DRAWTRI -> {
+//                int[] xPoints = {start.x, end.x, Math.min(start.x, end.x) - Math.abs(start.x - end.x)};
+//                int[] yPoints = {start.y, end.y, end.y};
+//                graphics2D.drawPolygon(xPoints, yPoints, 3);
+//            }
+//            case DRAWTEXT -> {
+//                textDraw = JOptionPane.showInputDialog(null, "Please input text");
+//                if (textDraw != null) {
+//                    graphics2D.drawString(textDraw, start.x, start.y);
+//                }
+//            }
         }
         this.getGraphics().drawImage(bufferedImage, 0, 0, null);
     }
@@ -97,12 +96,15 @@ public class CanvasPanel extends JPanel{
     private class myMotionAdapter implements MouseMotionListener {
         @Override
         public void mouseDragged(MouseEvent e) {
+
             if (mode.equals(FREEDRAW)) {
                 end.setLocation(e.getX(), e.getY());
                 draw();
-                start = end;
+                start.setLocation(end);
+                System.out.println("freedraw - mouse drag - start: " + start + " end: " + end);
             }
             if (mode.equals(DRAWLINE)) {
+                System.out.println("line - mouse drag - start: " + start + " end: " + end);
                 end.setLocation(e.getX(), e.getY());
                 repaint();
             }
@@ -123,8 +125,11 @@ public class CanvasPanel extends JPanel{
 
         @Override
         public void mousePressed(MouseEvent e) {
+
             if (mode.equals(DRAWLINE)){
                 start.setLocation(e.getX(), e.getY());
+                end.setLocation(e.getX(), e.getY());
+                System.out.println("line - mouse press - start: " + start + " end: " + end);
                 isDrawing = true;
             }
 
@@ -133,6 +138,8 @@ public class CanvasPanel extends JPanel{
 
         @Override
         public void mouseReleased(MouseEvent e) {
+
+
             if (mode.equals(DRAWLINE)){
                 end.setLocation(e.getX(), e.getY());
                 draw();
