@@ -47,7 +47,6 @@ public class FrontEndView extends JFrame {
     private JMenuItem fileOpen;
     private JMenuItem fileSave;
     private JMenuItem fileSaveAs;
-    private JMenu freeDraw;
     private JRadioButtonMenuItem freeDrawButton;
     private JTextArea inputArea;
     private JScrollPane inputPanel;
@@ -122,7 +121,6 @@ public class FrontEndView extends JFrame {
         colorChooser = new JMenuItem();
         textMenu = new JMenu();
         drawText = new JRadioButtonMenuItem();
-        freeDraw = new JMenu();
         freeDrawButton = new JRadioButtonMenuItem();
         cursorMenu = new JMenu();
         cursorButton = new JRadioButtonMenuItem();
@@ -257,7 +255,6 @@ public class FrontEndView extends JFrame {
 
         addShapeMenu();
 
-        addFreeDraw();
         addCursorMenu();
         addTextMenu();
         addColorMenu();
@@ -322,6 +319,7 @@ public class FrontEndView extends JFrame {
         });
         shapeMenu.add(drawLine);
 
+        // =========================================================
         drawRect.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, java.awt.event.InputEvent.CTRL_DOWN_MASK));
         modeGroup.add(drawRect);
         drawRect.setText("Rectangle");
@@ -332,6 +330,7 @@ public class FrontEndView extends JFrame {
         });
         shapeMenu.add(drawRect);
 
+        // =========================================================
         drawTri.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, java.awt.event.InputEvent.CTRL_DOWN_MASK));
         modeGroup.add(drawTri);
         drawTri.setText("Triangle");
@@ -342,6 +341,7 @@ public class FrontEndView extends JFrame {
         });
         shapeMenu.add(drawTri);
 
+        // =========================================================
         drawCir.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, java.awt.event.InputEvent.CTRL_DOWN_MASK));
         modeGroup.add(drawCir);
         drawCir.setText("Circle");
@@ -351,6 +351,16 @@ public class FrontEndView extends JFrame {
             }
         });
         shapeMenu.add(drawCir);
+
+        // =========================================================
+        modeGroup.add(freeDrawButton);
+        freeDrawButton.setText("Free Draw");
+        freeDrawButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                freeDrawButtonActionPerformed(evt);
+            }
+        });
+        shapeMenu.add(freeDrawButton);
         menuBar.add(shapeMenu);
     }
 
@@ -450,18 +460,6 @@ public class FrontEndView extends JFrame {
         menuBar.add(cursorMenu);
     }
 
-    private void addFreeDraw() {
-        freeDraw.setText("Drawing");
-        modeGroup.add(freeDrawButton);
-        freeDrawButton.setText("Free Draw");
-        freeDrawButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
-                freeDrawButtonActionPerformed(evt);
-            }
-        });
-        freeDraw.add(freeDrawButton);
-        menuBar.add(freeDraw);
-    }
 
     private void addTextMenu() {
         textMenu.setText("Text");
