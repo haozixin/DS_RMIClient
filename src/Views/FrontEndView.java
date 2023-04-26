@@ -31,7 +31,7 @@ public class FrontEndView extends JFrame {
     private JPanel chatPanel;
     private JButton clearButton;
     private JMenuItem colorChooser;
-    private JMenu colorMenu;
+
     private JMenu currentColor;
     private JMenu currentTool;
     private JRadioButtonMenuItem cursorButton;
@@ -119,7 +119,6 @@ public class FrontEndView extends JFrame {
         drawRect = new JRadioButtonMenuItem();
         drawTri = new JRadioButtonMenuItem();
         drawCir = new JRadioButtonMenuItem();
-        colorMenu = new JMenu();
         colorChooser = new JMenuItem();
         textMenu = new JMenu();
         drawText = new JRadioButtonMenuItem();
@@ -313,11 +312,6 @@ public class FrontEndView extends JFrame {
 
     private void addShapeMenu() {
         shapeMenu.setText("Shape");
-        shapeMenu.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(MouseEvent evt) {
-                shapeMenuMouseClicked(evt);
-            }
-        });
         drawLine.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_L, java.awt.event.InputEvent.CTRL_DOWN_MASK));
         modeGroup.add(drawLine);
         drawLine.setText("Line");
@@ -486,16 +480,14 @@ public class FrontEndView extends JFrame {
     }
 
     private void addColorMenu() {
-        colorMenu.setText("Color");
-        colorChooser.setText("Choose");
+        colorChooser.setText("Choose Color");
         colorChooser.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
                 boardPanel.setColor(JColorChooser.showDialog(null, "Choose a color", Color.black));
                 currentColor.setBackground(boardPanel.getColor());
             }
         });
-        colorMenu.add(colorChooser);
-        menuBar.add(colorMenu);
+        menuBar.add(colorChooser);
     }
 
     private void boardPanelKeyTyped(KeyEvent evt) {
@@ -525,16 +517,19 @@ public class FrontEndView extends JFrame {
 
     }
 
-    private void shapeMenuMouseClicked(MouseEvent evt) {
-
-    }
 
     private void drawTriActionPerformed(ActionEvent evt) {
 
     }
 
+    /**
+     * What will happen when the user click the line button in shape menu
+     * @param evt
+     */
     private void drawLineActionPerformed(ActionEvent evt) {
-
+        boardPanel.setMode(boardPanel.DRAWLINE);
+        currentTool.setText(boardPanel.DRAWLINE);
+        currentColor.setBackground(boardPanel.getColor());
     }
 
     private void drawRectActionPerformed(ActionEvent evt) {
@@ -545,9 +540,6 @@ public class FrontEndView extends JFrame {
         
     }
 
-    private void colorChooserActionPerformed(ActionEvent evt) {
-
-    }
 
     private void cursorButtonActionPerformed(ActionEvent evt) {
         

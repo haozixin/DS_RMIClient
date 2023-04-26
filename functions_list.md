@@ -3,3 +3,6 @@
 3. User should be able choose their favourite colour to draw the above features. At least 16 colours should be available.
 
 4. 窗口组件随着窗口大小的变化而变化，保证窗口组件的可见性。
+5. 自由画笔
+6. 选择各种颜色（用的自带组件）
+7. 

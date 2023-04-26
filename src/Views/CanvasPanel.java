@@ -6,6 +6,7 @@ import java.awt.event.*;
 import java.awt.image.BufferedImage;
 
 public class CanvasPanel extends JPanel{
+    private boolean isDrawing = false;
     private String textDraw = "";
     private Color color = Color.black;
     public String mode = "";
@@ -27,6 +28,7 @@ public class CanvasPanel extends JPanel{
         graphics2D = bufferedImage.createGraphics();
         graphics2D.setColor(Color.white);
         graphics2D.fillRect(0, 0, 800, 800);
+        graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         this.addMouseMotionListener(new myMotionAdapter());
         this.addMouseListener(new myMouseAdapter());
     }
@@ -34,14 +36,6 @@ public class CanvasPanel extends JPanel{
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         g.drawImage(bufferedImage, 0, 0, null);
-    }
-
-    public Graphics2D getGraphics2D() {
-        return graphics2D;
-    }
-
-    public BufferedImage getBufferedImage() {
-        return bufferedImage;
     }
 
     public void setMode(String mode) {
@@ -89,6 +83,15 @@ public class CanvasPanel extends JPanel{
         this.getGraphics().drawImage(bufferedImage, 0, 0, null);
     }
 
+    public void paint(Graphics g) {
+        super.paint(g);
+        g.setColor(color);
+        g.drawImage(bufferedImage, 0, 0, null);
+        if (isDrawing) {
+            g.drawLine(start.x, start.y, end.x, end.y);
+        }
+    }
+
 
 
     private class myMotionAdapter implements MouseMotionListener {
@@ -98,6 +101,10 @@ public class CanvasPanel extends JPanel{
                 end.setLocation(e.getX(), e.getY());
                 draw();
                 start = end;
+            }
+            if (mode.equals(DRAWLINE)) {
+                end.setLocation(e.getX(), e.getY());
+                repaint();
             }
         }
 
@@ -116,11 +123,21 @@ public class CanvasPanel extends JPanel{
 
         @Override
         public void mousePressed(MouseEvent e) {
+            if (mode.equals(DRAWLINE)){
+                start.setLocation(e.getX(), e.getY());
+                isDrawing = true;
+            }
+
 
         }
 
         @Override
         public void mouseReleased(MouseEvent e) {
+            if (mode.equals(DRAWLINE)){
+                end.setLocation(e.getX(), e.getY());
+                draw();
+                isDrawing = false;
+            }
 
         }
 
