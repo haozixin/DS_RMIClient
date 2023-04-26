@@ -14,7 +14,7 @@ public class FrontEndView extends JFrame {
     private String remoteMode;
     private IRemoteBoard remoteBoard;
     private String name;
-//    private Color color;
+
     private Color remoteColor;
     DefaultListModel chatModel;
     private boolean isManager=true;
@@ -171,12 +171,7 @@ public class FrontEndView extends JFrame {
             }
         });
 
-        clearButton.setText("Clear");
-        clearButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                clearButtonActionPerformed(evt);
-            }
-        });
+        addClearButtonListener();
 
         userListLabel.setHorizontalAlignment(SwingConstants.CENTER);
         userListLabel.setText("Participants:");
@@ -252,8 +247,6 @@ public class FrontEndView extends JFrame {
         addFileMenu();
 
         addShapeMenu();
-
-        addCursorMenu();
         addTextMenu();
         addColorMenu();
 
@@ -303,6 +296,15 @@ public class FrontEndView extends JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void addClearButtonListener() {
+        clearButton.setText("Clear");
+        clearButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+
+            }
+        });
+    }
 
 
     private void addShapeMenu() {
@@ -438,25 +440,10 @@ public class FrontEndView extends JFrame {
         setJMenuBar(menuBar);
     }
 
-    private void addCursorMenu() {
-        cursorMenu.setText("Cursor");
-        modeGroup.add(cursorButton);
-        cursorButton.setText("Mouse");
-        cursorButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
-                cursorButtonActionPerformed(evt);
-            }
-        });
-        cursorMenu.add(cursorButton);
-        menuBar.add(cursorMenu);
-    }
-
 
     private void addTextMenu() {
         textMenu.setText("Text");
         modeGroup.add(drawText);
-        drawText.setSelected(false);
-        drawText.setSelected(true);
         drawText.setText("drawText");
         drawText.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(ActionEvent evt) {
@@ -486,9 +473,6 @@ public class FrontEndView extends JFrame {
 
     }
 
-    private void clearButtonActionPerformed(ActionEvent evt) {
-
-    }
 
     private void userListMouseClicked(MouseEvent evt) {
 
@@ -536,9 +520,6 @@ public class FrontEndView extends JFrame {
     }
 
 
-    private void cursorButtonActionPerformed(ActionEvent evt) {
-        
-    }
 
     private void drawTextActionPerformed(ActionEvent evt) {
         boardPanel.setMode(boardPanel.DRAWTEXT);
