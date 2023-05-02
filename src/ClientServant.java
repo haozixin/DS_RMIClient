@@ -1,6 +1,6 @@
 import Views.FrontEndView;
-import remote.IRemoteBoard;
-import remote.IRemoteClient;
+import remoteInterfaces.IRemoteBoard;
+import remoteInterfaces.IRemoteClient;
 
 import javax.swing.*;
 import java.rmi.RemoteException;

@@ -1,6 +1,6 @@
 package Views;
 
-import remote.IRemoteBoard;
+import remoteInterfaces.IRemoteBoard;
 
 import javax.swing.*;
 import javax.swing.border.BevelBorder;
