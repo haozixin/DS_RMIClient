@@ -10,11 +10,12 @@ public class ClientServant extends UnicastRemoteObject implements IRemoteClient 
     private FrontEndView whiteBoard;
     private String name;
     private boolean isManager;
-    IRemoteBoard board;
+    IRemoteBoard service;
 
-    protected ClientServant(String userName) throws RemoteException{
+    protected ClientServant(String userName, IRemoteBoard remoteBoard) throws RemoteException, NullPointerException {
         this.name = userName;
-        this.isManager = board.createOrJoinBoard(this);
+        this.service = remoteBoard;
+        this.isManager = service.createOrJoinBoard(this);
         // first user is manager automatically
         if (isManager){
             JOptionPane.showMessageDialog(null, "You are the manager of this board");
@@ -42,7 +43,7 @@ public class ClientServant extends UnicastRemoteObject implements IRemoteClient 
 
 
     public void startCanvas(){
-        whiteBoard = new FrontEndView(name, isManager);
+        whiteBoard = new FrontEndView(name, isManager, service);
         whiteBoard.setSize(710,500);
         whiteBoard.setVisible(true);
     }

@@ -66,8 +66,16 @@ public class FrontEndView extends JFrame {
     /**
      * Creates new form BoardClient
      */
-    public FrontEndView(String name, boolean isManager){
-        super.setTitle("ZX Share White Board ~_~");
+    public FrontEndView(String name, boolean isManager, IRemoteBoard remoteBoard){
+        super.setTitle("ZX Share White Board ~_~ " + name);
+        this.name = name;
+        this.isManager = isManager;
+        if (isManager){
+            this.setTitle("ZX Share White Board ~_~ " + name + " (Manager)");
+        }
+        userList = new JList<>();
+        chatModel = new DefaultListModel<>();
+        this.remoteBoard = remoteBoard;
         initComponents();
         this.getContentPane().setBackground(Color.white);
         listPanel.setBackground(Color.white);
@@ -76,12 +84,11 @@ public class FrontEndView extends JFrame {
         menuBar.setBorder(new BevelBorder(BevelBorder.RAISED));
         remoteStart = new Point(0, 0);
         remoteEnd = new Point(0, 0);
-        this.name = name;
-        this.isManager = isManager;
-        userList = new JList<>();
+
         remoteColor = new Color(0, 0, 0);
-        chatModel = new DefaultListModel<>();
+
         fileName = null;
+
 
     }
 
@@ -202,7 +209,7 @@ public class FrontEndView extends JFrame {
         chatLabel.setHorizontalTextPosition(SwingConstants.CENTER);
 
         chatList.setModel(new AbstractListModel<String>() {
-            String[] strings = { "Message 1", "Message 2", "Message 3", "Message 4"};
+            String[] strings = {};
             public int getSize() { return strings.length; }
             public String getElementAt(int i) { return strings[i]; }
         });
@@ -311,7 +318,7 @@ public class FrontEndView extends JFrame {
                 } catch (RemoteException e) {
                     System.out.println("Some problem with sending message, this is a RemoteException");
                 } catch (Exception e) {
-                    System.out.println("The function in the server is not working, this is a Exception");
+                    e.printStackTrace();
                 }
             }
         });
@@ -578,7 +585,7 @@ public class FrontEndView extends JFrame {
     }
     public void addMessage(String text){
         chatModel.addElement(text);
-
+        chatList.setModel(chatModel);
     }
 
 

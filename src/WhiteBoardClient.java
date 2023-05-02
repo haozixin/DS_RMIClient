@@ -50,7 +50,7 @@ public class WhiteBoardClient {
             IRemoteBoard ShareWhiteBoardService = (IRemoteBoard) registry.lookup(
                             PropertiesUtil.getConfig(S,PropertiesUtil.SERVER_CONFIG_PROPERTIES)
             );
-//            ClientServant client = new ClientServant(userName);
+            ClientServant client = new ClientServant(userName, ShareWhiteBoardService);
         } catch (Exception e) {
             e.printStackTrace();
 //            System.out.println("Cannot link to server, Please check the server address and port number");
