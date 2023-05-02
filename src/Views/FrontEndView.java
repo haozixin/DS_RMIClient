@@ -4,8 +4,11 @@ import remote.IRemoteBoard;
 
 import javax.swing.*;
 import javax.swing.border.BevelBorder;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.event.*;
+import java.rmi.RemoteException;
 
 public class FrontEndView extends JFrame {
 
@@ -16,8 +19,8 @@ public class FrontEndView extends JFrame {
     private String name;
 
     private Color remoteColor;
-    DefaultListModel chatModel;
-    private boolean isManager=true;
+    DefaultListModel<String> chatModel;
+    private boolean isManager;
     private String fileName;
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -63,7 +66,7 @@ public class FrontEndView extends JFrame {
     /**
      * Creates new form BoardClient
      */
-    public FrontEndView(){
+    public FrontEndView(String name, boolean isManager){
         super.setTitle("ZX Share White Board ~_~");
         initComponents();
         this.getContentPane().setBackground(Color.white);
@@ -74,9 +77,10 @@ public class FrontEndView extends JFrame {
         remoteStart = new Point(0, 0);
         remoteEnd = new Point(0, 0);
         this.name = name;
+        this.isManager = isManager;
         userList = new JList<>();
         remoteColor = new Color(0, 0, 0);
-        chatModel = new DefaultListModel();
+        chatModel = new DefaultListModel<>();
         fileName = null;
 
     }
@@ -95,6 +99,8 @@ public class FrontEndView extends JFrame {
         inputPanel = new JScrollPane();
         inputArea = new JTextArea();
         sendButton = new JButton();
+        sendButton.setEnabled(false);
+        sendButton.setToolTipText("Click enable when you input text in the text area");
         clearButton = new JButton();
         listPanel = new JPanel();
         userListLabel = new JLabel();
@@ -155,30 +161,14 @@ public class FrontEndView extends JFrame {
                                 .addGap(0, 0, Short.MAX_VALUE))
         );
 
-        inputPanel.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-        inputPanel.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-
-        inputArea.setColumns(25);
-        inputArea.setLineWrap(true);
-        inputArea.setRows(5);
-        inputArea.setText("");
-        inputPanel.setViewportView(inputArea);
-
-        sendButton.setText("Send");
-        sendButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                sendButtonActionPerformed(evt);
-            }
-        });
-
-        addClearButtonListener();
+        addChatModule();
 
         userListLabel.setHorizontalAlignment(SwingConstants.CENTER);
         userListLabel.setText("Participants:");
         userListLabel.setHorizontalTextPosition(SwingConstants.CENTER);
 
         userList.setModel(new AbstractListModel<String>() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
+            String[] strings = { "User 1", "User 2", "User 3", "User 4", "User 5" };
             public int getSize() { return strings.length; }
             public String getElementAt(int i) { return strings[i]; }
         });
@@ -212,7 +202,7 @@ public class FrontEndView extends JFrame {
         chatLabel.setHorizontalTextPosition(SwingConstants.CENTER);
 
         chatList.setModel(new AbstractListModel<String>() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
+            String[] strings = { "Message 1", "Message 2", "Message 3", "Message 4"};
             public int getSize() { return strings.length; }
             public String getElementAt(int i) { return strings[i]; }
         });
@@ -297,13 +287,62 @@ public class FrontEndView extends JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void addClearButtonListener() {
+    private void addChatModule() {
+        inputPanel.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+        inputPanel.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+
+        inputArea.setColumns(25);
+        inputArea.setLineWrap(true);
+        inputArea.setRows(5);
+        inputArea.setText("");
+        inputPanel.setViewportView(inputArea);
+        inputArea.getDocument().addDocumentListener(getListener());
+
+        sendButton.setText("Send");
+        sendButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                try {
+                    boolean isSuccess = remoteBoard.broadcastMessage(name, inputArea.getText());
+                    if (!isSuccess) {
+                        JOptionPane.showMessageDialog(null,
+                                "userName or message is empty, maybe, you are not in the board, please join the board first");
+                    }
+                    inputArea.setText("");
+                } catch (RemoteException e) {
+                    System.out.println("Some problem with sending message, this is a RemoteException");
+                } catch (Exception e) {
+                    System.out.println("The function in the server is not working, this is a Exception");
+                }
+            }
+        });
         clearButton.setText("Clear");
         clearButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
 
             }
         });
+    }
+
+    private DocumentListener getListener() {
+        return new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                checkButton();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                checkButton();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                checkButton();
+            }
+            private void checkButton() {
+                sendButton.setEnabled(!inputArea.getText().trim().isEmpty());
+            }
+        };
     }
 
 
@@ -469,9 +508,6 @@ public class FrontEndView extends JFrame {
     private void boardPanelKeyTyped(KeyEvent evt) {
     }
 
-    private void sendButtonActionPerformed(ActionEvent evt) {
-
-    }
 
 
     private void userListMouseClicked(MouseEvent evt) {
@@ -539,6 +575,10 @@ public class FrontEndView extends JFrame {
 
     private void newBoardActionPerformed(ActionEvent evt) {
         
+    }
+    public void addMessage(String text){
+        chatModel.addElement(text);
+
     }
 
 

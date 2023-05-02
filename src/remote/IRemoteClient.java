@@ -1,10 +1,8 @@
 package remote;
 
 import java.rmi.Remote;
-import java.rmi.RemoteException;
 
 public interface IRemoteClient extends Remote {
-    String test() throws RemoteException;
-
-    void startCanvas() throws RemoteException;
+    void sendMessageLocally(String msg);
+    public void setManager(boolean isManager);
 }
