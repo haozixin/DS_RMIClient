@@ -590,6 +590,7 @@ public class FrontEndView extends JFrame {
 
 
     private void formWindowClosing(WindowEvent evt) {
+        System.out.println("window closing");
         // ask for confirmation
         if (isManager) {
             int result = JOptionPane.showConfirmDialog(this, "All users will be removed, Are you sure to close the board?", "Confirm", JOptionPane.YES_NO_OPTION);
@@ -634,8 +635,12 @@ public class FrontEndView extends JFrame {
      */
     public void notifyAndClose(String s) {
         JOptionPane.showMessageDialog(this, s);
-//        System.exit(0);
-        // 关闭当前线程
-        Thread.currentThread().interrupt();
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                System.exit(0);
+            }
+        });
+        t.start();
     }
 }

@@ -13,6 +13,7 @@ public class ClientServant extends UnicastRemoteObject implements IRemoteClient 
     IRemoteBoard service;
 
     protected ClientServant(String userName, IRemoteBoard remoteBoard) throws RemoteException, NullPointerException {
+        System.out.println("The thread for this ClientServant is: "+Thread.currentThread().getName());
         this.name = userName;
         this.service = remoteBoard;
         this.isManager = service.createOrJoinBoard(this);
@@ -41,6 +42,7 @@ public class ClientServant extends UnicastRemoteObject implements IRemoteClient 
 
     @Override
     public void getNotificationAndClose(String s) throws RemoteException {
+        System.out.println("The thread in getNotificationAndClose is: "+Thread.currentThread().getName());
         if (s == null) {
             System.out.println("Notification is null");
             return;
