@@ -590,7 +590,6 @@ public class FrontEndView extends JFrame {
 
 
     private void formWindowClosing(WindowEvent evt) {
-        System.out.println("window closing");
         // ask for confirmation
         if (isManager) {
             int result = JOptionPane.showConfirmDialog(this, "All users will be removed, Are you sure to close the board?", "Confirm", JOptionPane.YES_NO_OPTION);
@@ -603,7 +602,7 @@ public class FrontEndView extends JFrame {
                     System.out.println("RemoteException when closing the board, the server may be down");
                     JOptionPane.showMessageDialog(this,"The server side may be down, we will close the board for you!", "Confirm", JOptionPane.INFORMATION_MESSAGE);
                 }
-                setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
             }else{
                 // do nothing
                 setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
