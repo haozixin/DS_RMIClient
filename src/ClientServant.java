@@ -23,6 +23,26 @@ public class ClientServant extends UnicastRemoteObject implements IRemoteClient 
         else{
             JOptionPane.showMessageDialog(null, "Manager has approved you to join the board");
         }
+        // add a shutdown hook, when the program is terminated, it will do something
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            public void run() {
+                if (isManager) {
+                    try {
+                        service.closeAndNotifyAllUsers(name);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }else{
+                    try {
+                        service.existBoard(name);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+            }
+        });
+
         startCanvas();
     }
     @Override
