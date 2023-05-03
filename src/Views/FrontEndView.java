@@ -602,7 +602,7 @@ public class FrontEndView extends JFrame {
                     System.out.println("RemoteException when closing the board, the server may be down");
                     JOptionPane.showMessageDialog(this,"The server side may be down, we will close the board for you!", "Confirm", JOptionPane.INFORMATION_MESSAGE);
                 }
-                setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+                setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             }else{
                 // do nothing
                 setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
