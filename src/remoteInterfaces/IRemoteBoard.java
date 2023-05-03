@@ -10,4 +10,6 @@ public interface IRemoteBoard extends Remote {
     boolean closeAndNotifyAllUsers(String managerName)throws RemoteException;
 
     boolean existBoard(String userName) throws RemoteException;
+
+    boolean isRepeated(String name);
 }

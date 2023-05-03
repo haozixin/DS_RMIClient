@@ -595,13 +595,6 @@ public class FrontEndView extends JFrame {
             int result = JOptionPane.showConfirmDialog(this, "All users will be removed, Are you sure to close the board?", "Confirm", JOptionPane.YES_NO_OPTION);
             // if the user is the manager, ask if he wants to save the board
             if (result == JOptionPane.YES_OPTION) {
-                // notify and close all users
-                try {
-                    remoteBoard.closeAndNotifyAllUsers(name);
-                } catch (RemoteException e) {
-                    System.out.println("RemoteException when closing the board, the server may be down");
-                    JOptionPane.showMessageDialog(this,"The server side may be down, we will close the board for you!", "Confirm", JOptionPane.INFORMATION_MESSAGE);
-                }
                 setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             }else{
                 // do nothing
@@ -612,12 +605,6 @@ public class FrontEndView extends JFrame {
             // if the user is not the manager, ask if he wants to save the board
             int result = JOptionPane.showConfirmDialog(this, "Are you sure to close the board?", "Confirm", JOptionPane.YES_NO_OPTION);
             if (result == JOptionPane.YES_OPTION) {
-                // notify and close all users
-                try {
-                    remoteBoard.existBoard(name);
-                } catch (RemoteException e) {
-                    throw new RuntimeException(e);
-                }
                 setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             }else{
                 // do nothing
