@@ -316,7 +316,7 @@ public class FrontEndView extends JFrame {
                     }
                     inputArea.setText("");
                 } catch (RemoteException e) {
-                    System.out.println("Some problem with sending message, this is a RemoteException");
+                    System.out.println("Some problem with sending message, this is a RemoteException, the server may be down");
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -591,14 +591,51 @@ public class FrontEndView extends JFrame {
 
     private void formWindowClosing(WindowEvent evt) {
         // ask for confirmation
-        int result = JOptionPane.showConfirmDialog(this, "Are you sure to close the board?", "Confirm", JOptionPane.YES_NO_OPTION);
-        if (result == JOptionPane.YES_OPTION) {
-            // close
-            System.exit(0);
-        } else {
-            // do nothing
-            setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+        if (isManager) {
+            int result = JOptionPane.showConfirmDialog(this, "All users will be removed, Are you sure to close the board?", "Confirm", JOptionPane.YES_NO_OPTION);
+            // if the user is the manager, ask if he wants to save the board
+            if (result == JOptionPane.YES_OPTION) {
+                // notify and close all users
+                try {
+                    remoteBoard.closeAndNotifyAllUsers(name);
+                } catch (RemoteException e) {
+                    System.out.println("RemoteException when closing the board, the server may be down");
+                    JOptionPane.showMessageDialog(this,"The server side may be down, we will close the board for you!", "Confirm", JOptionPane.INFORMATION_MESSAGE);
+                }
+                setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            }else{
+                // do nothing
+                setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+            }
+        }
+        else{
+            // if the user is not the manager, ask if he wants to save the board
+            int result = JOptionPane.showConfirmDialog(this, "Are you sure to close the board?", "Confirm", JOptionPane.YES_NO_OPTION);
+            if (result == JOptionPane.YES_OPTION) {
+                // notify and close all users
+                try {
+                    remoteBoard.existBoard(name);
+                } catch (RemoteException e) {
+                    throw new RuntimeException(e);
+                }
+                setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            }else{
+                // do nothing
+                setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+            }
         }
     }
 
+    /**
+     * This method is called by remoteBoard to notify the user that the board is closed
+     * @param s messages to be displayed
+     * @return
+     * @throws RemoteException
+     */
+    public void notifyAndClose(String s) {
+        JOptionPane.showMessageDialog(this, s);
+//        System.exit(0);
+        // 关闭当前线程
+        Thread.currentThread().interrupt();
+    }
 }

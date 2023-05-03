@@ -25,10 +25,11 @@ public class ClientServant extends UnicastRemoteObject implements IRemoteClient 
         }
         startCanvas();
     }
-
+    @Override
     public String getName(){
         return name;
     }
+    @Override
     public boolean isManager(){
         return isManager;
     }
@@ -38,8 +39,14 @@ public class ClientServant extends UnicastRemoteObject implements IRemoteClient 
         this.isManager = isManager;
     }
 
-
-
+    @Override
+    public void getNotificationAndClose(String s) throws RemoteException {
+        if (s == null) {
+            System.out.println("Notification is null");
+            return;
+        }
+        whiteBoard.notifyAndClose(s);
+    }
 
 
     public void startCanvas(){
