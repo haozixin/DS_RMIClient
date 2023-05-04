@@ -5,18 +5,20 @@ import remoteInterfaces.IRemoteClient;
 import javax.swing.*;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
 
 public class ClientServant extends UnicastRemoteObject implements IRemoteClient {
     private FrontEndView whiteBoard;
     private String name;
     private boolean isManager;
     IRemoteBoard service;
+    ArrayList<String> userList = new ArrayList<>();
 
     protected ClientServant(String userName, IRemoteBoard remoteBoard) throws RemoteException, NullPointerException {
+        addShudownHook();
         this.name = userName;
         this.service = remoteBoard;
         createOrAskJoin();
-        addShudownHook();
         startCanvas();
     }
 
@@ -72,6 +74,15 @@ public class ClientServant extends UnicastRemoteObject implements IRemoteClient 
     }
 
     @Override
+    public void updateUserList(ArrayList<String> userList) throws RemoteException {
+        if (whiteBoard == null) {
+            this.userList = userList;
+        }else{
+            whiteBoard.updateUserList(userList);
+        }
+    }
+
+    @Override
     public boolean askJoin(String name) {
         int result = JOptionPane.showConfirmDialog(null, "User "+name+" wants to join the board, do you approve?", "Manager approval", JOptionPane.YES_NO_OPTION);
         return result == JOptionPane.YES_OPTION;
@@ -93,13 +104,40 @@ public class ClientServant extends UnicastRemoteObject implements IRemoteClient 
             System.out.println("Notification is null");
             return;
         }
-        whiteBoard.notifyAndClose(s);
+        notifyAndClose(s);
+    }
+    /**
+     * This method is called by remoteBoard to notify the user that the board is closed
+     * @param s messages to be displayed
+     * @return
+     * @throws RemoteException
+     */
+    private void notifyAndClose(String s) {
+        JOptionPane.showMessageDialog(whiteBoard, s);
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                System.exit(0);
+            }
+        });
+        t.start();
+    }
+
+    public void close(){
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                System.exit(0);
+            }
+        });
+        t.start();
     }
 
 
     public void startCanvas(){
         whiteBoard = new FrontEndView(name, isManager, service);
         whiteBoard.setSize(710,500);
+        whiteBoard.updateUserList(userList);
         whiteBoard.setVisible(true);
     }
 

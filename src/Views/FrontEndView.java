@@ -9,6 +9,7 @@ import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.event.*;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 
 public class FrontEndView extends JFrame {
 
@@ -175,7 +176,7 @@ public class FrontEndView extends JFrame {
         userListLabel.setHorizontalTextPosition(SwingConstants.CENTER);
 
         userList.setModel(new AbstractListModel<String>() {
-            String[] strings = { "User 1", "User 2", "User 3", "User 4", "User 5" };
+            String[] strings = {};
             public int getSize() { return strings.length; }
             public String getElementAt(int i) { return strings[i]; }
         });
@@ -596,6 +597,7 @@ public class FrontEndView extends JFrame {
             // if the user is the manager, ask if he wants to save the board
             if (result == JOptionPane.YES_OPTION) {
                 setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
             }else{
                 // do nothing
                 setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
@@ -613,20 +615,13 @@ public class FrontEndView extends JFrame {
         }
     }
 
-    /**
-     * This method is called by remoteBoard to notify the user that the board is closed
-     * @param s messages to be displayed
-     * @return
-     * @throws RemoteException
-     */
-    public void notifyAndClose(String s) {
-        JOptionPane.showMessageDialog(this, s);
-        Thread t = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                System.exit(0);
-            }
-        });
-        t.start();
+
+
+    public void updateUserList(ArrayList<String> userList) {
+        DefaultListModel<String> userModel = new DefaultListModel<>();
+        for(String name:userList){
+            userModel.addElement(name);
+        }
+        this.userList.setModel(userModel);
     }
 }
