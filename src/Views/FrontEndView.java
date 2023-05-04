@@ -59,9 +59,9 @@ public class FrontEndView extends JFrame {
     private JButton sendButton;
     private JMenu shapeMenu;
     private JMenu textMenu;
-    private JList<String> userList;
+    private JList<String> participantsList;
     private JLabel userListLabel;
-    private JScrollPane userListPanel;
+    private JScrollPane participantsListPanel;
     // End of variables declaration//GEN-END:variables
 
     /**
@@ -74,7 +74,7 @@ public class FrontEndView extends JFrame {
         if (isManager){
             this.setTitle("ZX Share White Board ~_~ " + name + " (Manager)");
         }
-        userList = new JList<>();
+        participantsList = new JList<>();
         chatModel = new DefaultListModel<>();
         this.remoteBoard = remoteBoard;
         initComponents();
@@ -112,8 +112,8 @@ public class FrontEndView extends JFrame {
         clearButton = new JButton();
         listPanel = new JPanel();
         userListLabel = new JLabel();
-        userListPanel = new JScrollPane();
-        userList = new JList<>();
+        participantsListPanel = new JScrollPane();
+        participantsList = new JList<>();
         chatPanel = new JPanel();
         chatLabel = new JLabel();
         chatBoxPanel = new JScrollPane();
@@ -175,23 +175,23 @@ public class FrontEndView extends JFrame {
         userListLabel.setText("Participants:");
         userListLabel.setHorizontalTextPosition(SwingConstants.CENTER);
 
-        userList.setModel(new AbstractListModel<String>() {
+        participantsList.setModel(new AbstractListModel<String>() {
             String[] strings = {};
             public int getSize() { return strings.length; }
             public String getElementAt(int i) { return strings[i]; }
         });
-        userList.addMouseListener(new java.awt.event.MouseAdapter() {
+        participantsList.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                userListMouseClicked(evt);
+                participantsListMouseClicked(evt);
             }
         });
-        userListPanel.setViewportView(userList);
+        participantsListPanel.setViewportView(participantsList);
 
         GroupLayout listPanelLayout = new GroupLayout(listPanel);
         listPanel.setLayout(listPanelLayout);
         listPanelLayout.setHorizontalGroup(
                 listPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                        .addComponent(userListPanel)
+                        .addComponent(participantsListPanel)
                         .addGroup(listPanelLayout.createSequentialGroup()
                                 .addComponent(userListLabel)
                                 .addGap(0, 0, Short.MAX_VALUE))
@@ -201,7 +201,7 @@ public class FrontEndView extends JFrame {
                         .addGroup(listPanelLayout.createSequentialGroup()
                                 .addComponent(userListLabel)
                                 .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(userListPanel, GroupLayout.DEFAULT_SIZE, 87, Short.MAX_VALUE)
+                                .addComponent(participantsListPanel, GroupLayout.DEFAULT_SIZE, 87, Short.MAX_VALUE)
                                 .addContainerGap())
         );
 
@@ -518,7 +518,26 @@ public class FrontEndView extends JFrame {
 
 
 
-    private void userListMouseClicked(MouseEvent evt) {
+    private void participantsListMouseClicked(MouseEvent evt) {
+        // if the user double click the name (not himself/herself) and the user is manager, then kick the user out
+        if (evt.getClickCount() == 2 && isManager){
+            if (participantsList.getSelectedIndex() != 0) {
+                String name = participantsList.getSelectedValue();
+                if (name != null) {
+                    // send a message to the server to kick the user out
+                    int option = JOptionPane.showConfirmDialog(null, "Are you sure to kick " + name + " out?", "Kick out", JOptionPane.YES_NO_OPTION);
+                    if (option == JOptionPane.YES_OPTION) {
+                        try {
+                            remoteBoard.kickOut(name);
+                        } catch (RemoteException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                }
+            }
+
+        }
+
 
     }
 
@@ -622,6 +641,6 @@ public class FrontEndView extends JFrame {
         for(String name:userList){
             userModel.addElement(name);
         }
-        this.userList.setModel(userModel);
+        this.participantsList.setModel(userModel);
     }
 }

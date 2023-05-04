@@ -11,5 +11,7 @@ public interface IRemoteBoard extends Remote {
 
     boolean existBoard(String userName) throws RemoteException;
 
-    boolean isRepeated(String name);
+    boolean isRepeated(String name)throws RemoteException;
+
+    void kickOut(String name)throws RemoteException;
 }

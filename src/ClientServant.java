@@ -30,14 +30,14 @@ public class ClientServant extends UnicastRemoteObject implements IRemoteClient 
                 if (isManager) {
                     try {
                         service.closeAndNotifyAllUsers(name);
-                    } catch (RemoteException e) {
+                    } catch (Exception e) {
                         System.out.println("RemoteException when closing the board, the server may be down");
                         JOptionPane.showMessageDialog(null,"The server side may be down, we will close the board for you!", "Confirm", JOptionPane.INFORMATION_MESSAGE);
                     }
                 }else{
                     try {
                         service.existBoard(name);
-                    } catch (RemoteException e) {
+                    } catch (Exception e) {
                         System.out.println("RemoteException when closing the board, the server may be down");
                         JOptionPane.showMessageDialog(null,"The server side may be down, we will close the board for you!", "Confirm", JOptionPane.INFORMATION_MESSAGE);
                     }
