@@ -89,7 +89,6 @@ public class ClientServant extends UnicastRemoteObject implements IRemoteClient 
 
     @Override
     public void getNotificationAndClose(String s) throws RemoteException {
-        System.out.println("The thread in getNotificationAndClose is: "+Thread.currentThread().getName());
         if (s == null) {
             System.out.println("Notification is null");
             return;
