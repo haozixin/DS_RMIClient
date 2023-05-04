@@ -12,20 +12,14 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 
 public class FrontEndView extends JFrame {
-
-    private Point remoteStart;
-    private Point remoteEnd;
-    private String remoteMode;
     private IRemoteBoard remoteBoard;
     private String name;
-
-    private Color remoteColor;
     DefaultListModel<String> chatModel;
     private boolean isManager;
     private String fileName;
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private CanvasPanel boardPanel = new CanvasPanel();
+    private CanvasPanel boardPanel;
 
     private JScrollPane chatBoxPanel;
     private JLabel chatLabel;
@@ -77,16 +71,13 @@ public class FrontEndView extends JFrame {
         participantsList = new JList<>();
         chatModel = new DefaultListModel<>();
         this.remoteBoard = remoteBoard;
+        boardPanel = new CanvasPanel(this.remoteBoard, name);
         initComponents();
         this.getContentPane().setBackground(Color.white);
         listPanel.setBackground(Color.white);
         chatPanel.setBackground(Color.white);
         menuBar.setBackground(Color.white);
         menuBar.setBorder(new BevelBorder(BevelBorder.RAISED));
-        remoteStart = new Point(0, 0);
-        remoteEnd = new Point(0, 0);
-
-        remoteColor = new Color(0, 0, 0);
 
         fileName = null;
 
@@ -642,5 +633,9 @@ public class FrontEndView extends JFrame {
             userModel.addElement(name);
         }
         this.participantsList.setModel(userModel);
+    }
+
+    public void synDraw(String mode, Point start, Point end, Color color, String textDraw) {
+        boardPanel.synDraw(mode, start, end, color, textDraw);
     }
 }

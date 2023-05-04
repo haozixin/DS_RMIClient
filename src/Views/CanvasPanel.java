@@ -1,9 +1,12 @@
 package Views;
 
+import remoteInterfaces.IRemoteBoard;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
+import java.rmi.RemoteException;
 
 public class CanvasPanel extends JPanel{
     private boolean isDrawing = false;
@@ -20,8 +23,12 @@ public class CanvasPanel extends JPanel{
     private final Point end = new Point(0,0);
     private final BufferedImage bufferedImage;
     private final Graphics2D graphics2D;
+    private final IRemoteBoard service;
+    private String name;
 
-    public CanvasPanel() {
+    public CanvasPanel(IRemoteBoard service, String name) {
+        this.service = service;
+        this.name = name;
         this.setBackground(new Color(255, 255, 255));
         bufferedImage  = new BufferedImage(800, 800, BufferedImage.TYPE_INT_RGB);
         graphics2D = bufferedImage.createGraphics();
@@ -86,7 +93,7 @@ public class CanvasPanel extends JPanel{
             case DRAWTEXT -> {
                 textDraw = JOptionPane.showInputDialog(null, "Please input text");
                 if (textDraw != null) {
-                    graphics2D.drawString(textDraw, start.x, start.y);
+                    g.drawString(textDraw, start.x, start.y);
                 }
             }
         }
@@ -108,6 +115,44 @@ public class CanvasPanel extends JPanel{
         }
     }
 
+    /**
+     * A method to draw the image currently in the buffer onto the panel, it will be called by the remote server
+     * @param mode
+     * @param start
+     * @param end
+     * @param color
+     * @param textDraw
+     */
+    public void synDraw(String mode, Point start, Point end, Color color, String textDraw) {
+        graphics2D.setColor(color);
+        graphics2D.setStroke(new BasicStroke(2));
+        switch (mode) {
+            case FREEDRAW -> graphics2D.drawLine(start.x, start.y, end.x, end.y);
+            case DRAWLINE -> graphics2D.drawLine(start.x, start.y, end.x, end.y);
+            case DRAWRECT ->
+                    graphics2D.drawRect(remoteStartPoint(start, end).x, remoteStartPoint(start, end).y, Math.abs(start.x - end.x), Math.abs(start.y - end.y));
+            case DRAWOVAL ->
+                    graphics2D.drawOval(remoteStartPoint(start, end).x, remoteStartPoint(start, end).y, Math.abs(start.x - end.x), Math.abs(start.y - end.y));
+            case DRAWCIRCLE -> {
+                int radius = (int) Math.sqrt(Math.pow(start.x - end.x, 2) + Math.pow(start.y - end.y, 2));
+                graphics2D.drawOval(remoteStartPoint(start, end).x, remoteStartPoint(start, end).y, radius, radius);
+            }
+            case DRAWTEXT -> {
+                if (textDraw != null) {
+                    graphics2D.drawString(textDraw, start.x, start.y);
+                }
+            }
+        }
+        this.getGraphics().drawImage(bufferedImage, 0, 0, null);
+
+    }
+
+    private Point remoteStartPoint(Point remoteStart, Point remoteEnd){
+        Point startPoint = new Point();
+        startPoint.x = Math.min(remoteStart.x, remoteEnd.x);
+        startPoint.y = Math.min(remoteStart.y, remoteEnd.y);
+        return startPoint;
+    }
 
 
     private class myMotionAdapter implements MouseMotionListener {
@@ -150,6 +195,11 @@ public class CanvasPanel extends JPanel{
             end.setLocation(e.getX(), e.getY());
             if (mode.equals(DRAWLINE)|| mode.equals(DRAWOVAL) || mode.equals(DRAWRECT)|| mode.equals(DRAWCIRCLE)||mode.equals(DRAWTEXT)){
                 draw();
+                try {
+                    service.synDraw(name, mode, start, end, color, textDraw);
+                } catch (Exception ex) {
+                    throw new RuntimeException(ex);
+                }
                 isDrawing = false;
             }
 

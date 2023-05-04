@@ -3,6 +3,7 @@ import remoteInterfaces.IRemoteBoard;
 import remoteInterfaces.IRemoteClient;
 
 import javax.swing.*;
+import java.awt.*;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
@@ -131,6 +132,28 @@ public class ClientServant extends UnicastRemoteObject implements IRemoteClient 
             }
         });
         t.start();
+    }
+
+    /**
+     * the method will open a new thread to draw the shape in order to avoid concurrency problem
+     * (the remote draw and local draw together are performed in the same thread)
+     * @param mode
+     * @param start
+     * @param end
+     * @param color
+     * @param textDraw
+     * @throws RemoteException
+     */
+    @Override
+    public void draw(String mode, Point start, Point end, Color color, String textDraw) throws RemoteException {
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                whiteBoard.synDraw(mode, start, end, color, textDraw);
+            }
+        });
+        t.start();
+
     }
 
 
