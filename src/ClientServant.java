@@ -156,6 +156,11 @@ public class ClientServant extends UnicastRemoteObject implements IRemoteClient 
 
     }
 
+    @Override
+    public void newCanvas() throws RemoteException {
+        whiteBoard.newCanvas();
+    }
+
 
     public void startCanvas(){
         whiteBoard = new FrontEndView(name, isManager, service);

@@ -14,18 +14,18 @@ import java.util.ArrayList;
 public class FrontEndView extends JFrame {
     private IRemoteBoard remoteBoard;
     private String name;
-    DefaultListModel<String> chatModel;
+    DefaultListModel<String> chatListModel;
     private boolean isManager;
     private String fileName;
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private CanvasPanel boardPanel;
+    private CanvasPanel canvasPanel;
 
     private JScrollPane chatBoxPanel;
     private JLabel chatLabel;
-    private JList<String> chatList;
+    private JList<String> chatJList;
     private JPanel chatPanel;
-    private JButton clearButton;
+    private JButton clearChatRecordsButton;
     private JMenuItem colorChooser;
 
     private JMenu currentColor;
@@ -69,9 +69,9 @@ public class FrontEndView extends JFrame {
             this.setTitle("ZX Share White Board ~_~ " + name + " (Manager)");
         }
         participantsList = new JList<>();
-        chatModel = new DefaultListModel<>();
+        chatListModel = new DefaultListModel<>();
         this.remoteBoard = remoteBoard;
-        boardPanel = new CanvasPanel(this.remoteBoard, name);
+        canvasPanel = new CanvasPanel(this.remoteBoard, name);
         initComponents();
         this.getContentPane().setBackground(Color.white);
         listPanel.setBackground(Color.white);
@@ -100,7 +100,7 @@ public class FrontEndView extends JFrame {
         sendButton = new JButton();
         sendButton.setEnabled(false);
         sendButton.setToolTipText("Click enable when you input text in the text area");
-        clearButton = new JButton();
+        clearChatRecordsButton = new JButton();
         listPanel = new JPanel();
         userListLabel = new JLabel();
         participantsListPanel = new JScrollPane();
@@ -108,7 +108,7 @@ public class FrontEndView extends JFrame {
         chatPanel = new JPanel();
         chatLabel = new JLabel();
         chatBoxPanel = new JScrollPane();
-        chatList = new JList<>();
+        chatJList = new JList<>();
         menuBar = new JMenuBar();
         fileMenu = new JMenu();
         newBoard = new JMenuItem();
@@ -137,7 +137,7 @@ public class FrontEndView extends JFrame {
             }
         });
 
-        boardPanel.addKeyListener(new java.awt.event.KeyAdapter() {
+        canvasPanel.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyTyped(java.awt.event.KeyEvent evt) {
                 boardPanelKeyTyped(evt);
             }
@@ -145,8 +145,8 @@ public class FrontEndView extends JFrame {
 
         drawLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
-        GroupLayout boardPanelLayout = new GroupLayout(boardPanel);
-        boardPanel.setLayout(boardPanelLayout);
+        GroupLayout boardPanelLayout = new GroupLayout(canvasPanel);
+        canvasPanel.setLayout(boardPanelLayout);
         boardPanelLayout.setHorizontalGroup(
                 boardPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
                         .addGroup(boardPanelLayout.createSequentialGroup()
@@ -200,12 +200,12 @@ public class FrontEndView extends JFrame {
         chatLabel.setText("Messages:");
         chatLabel.setHorizontalTextPosition(SwingConstants.CENTER);
 
-        chatList.setModel(new AbstractListModel<String>() {
+        chatJList.setModel(new AbstractListModel<String>() {
             String[] strings = {};
             public int getSize() { return strings.length; }
             public String getElementAt(int i) { return strings[i]; }
         });
-        chatBoxPanel.setViewportView(chatList);
+        chatBoxPanel.setViewportView(chatJList);
 
         GroupLayout chatPanelLayout = new GroupLayout(chatPanel);
         chatPanel.setLayout(chatPanelLayout);
@@ -247,13 +247,13 @@ public class FrontEndView extends JFrame {
                 layout.createParallelGroup(GroupLayout.Alignment.LEADING)
                         .addGroup(layout.createSequentialGroup()
                                 .addContainerGap()
-                                .addComponent(boardPanel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(canvasPanel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
                                         .addGroup(GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                                                 .addComponent(sendButton)
                                                 .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                                .addComponent(clearButton)
+                                                .addComponent(clearChatRecordsButton)
                                                 .addGap(27, 27, 27))
                                         .addGroup(layout.createSequentialGroup()
                                                 .addComponent(inputPanel, GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
@@ -269,7 +269,7 @@ public class FrontEndView extends JFrame {
                 layout.createParallelGroup(GroupLayout.Alignment.LEADING)
                         .addGroup(layout.createSequentialGroup()
                                 .addContainerGap()
-                                .addComponent(boardPanel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(canvasPanel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addContainerGap())
                         .addGroup(layout.createSequentialGroup()
                                 .addComponent(listPanel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -280,7 +280,7 @@ public class FrontEndView extends JFrame {
                                 .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
                                         .addComponent(sendButton)
-                                        .addComponent(clearButton)))
+                                        .addComponent(clearChatRecordsButton)))
         );
 
         pack();
@@ -314,10 +314,14 @@ public class FrontEndView extends JFrame {
                 }
             }
         });
-        clearButton.setText("Clear");
-        clearButton.addActionListener(new ActionListener() {
+        clearChatRecordsButton.setText("Clear");
+        clearChatRecordsButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
-
+                int option = JOptionPane.showConfirmDialog(null, "Are you sure you want to clean chat?", "Confirm", JOptionPane.YES_NO_OPTION);
+                if(option == JOptionPane.YES_OPTION){
+                    chatListModel = new DefaultListModel();
+                    chatJList.setModel(chatListModel);
+                }
             }
         });
     }
@@ -360,7 +364,7 @@ public class FrontEndView extends JFrame {
         // =========================================================
         drawRect.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, java.awt.event.InputEvent.CTRL_DOWN_MASK));
         modeGroup.add(drawRect);
-        drawRect.setText(boardPanel.DRAWRECT);
+        drawRect.setText(canvasPanel.DRAWRECT);
         drawRect.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(ActionEvent evt) {
                 drawRectActionPerformed(evt);
@@ -371,7 +375,7 @@ public class FrontEndView extends JFrame {
         // =========================================================
         drawCir.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, java.awt.event.InputEvent.CTRL_DOWN_MASK));
         modeGroup.add(drawCir);
-        drawCir.setText(boardPanel.DRAWCIRCLE);
+        drawCir.setText(canvasPanel.DRAWCIRCLE);
         drawCir.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(ActionEvent evt) {
                 drawCircleActionPerformed(evt);
@@ -382,7 +386,7 @@ public class FrontEndView extends JFrame {
         // =========================================================
         drawOval.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, java.awt.event.InputEvent.CTRL_DOWN_MASK));
         modeGroup.add(drawOval);
-        drawOval.setText(boardPanel.DRAWOVAL);
+        drawOval.setText(canvasPanel.DRAWOVAL);
         drawOval.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(ActionEvent evt) {
                 drawOvalActionPerformed(evt);
@@ -408,8 +412,8 @@ public class FrontEndView extends JFrame {
         newBoard.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, java.awt.event.InputEvent.CTRL_DOWN_MASK));
         newBoard.setText("New Board");
         newBoard.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
-                newBoardActionPerformed(evt);
+            public void actionPerformed(ActionEvent e) {
+                createNewBoardActionPerformed(e);
             }
         });
         fileMenu.add(newBoard);
@@ -497,8 +501,8 @@ public class FrontEndView extends JFrame {
         colorChooser.setText("Choose Color");
         colorChooser.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
-                boardPanel.setColor(JColorChooser.showDialog(null, "Choose a color", Color.black));
-                currentColor.setBackground(boardPanel.getColor());
+                canvasPanel.setColor(JColorChooser.showDialog(null, "Choose a color", Color.black));
+                currentColor.setBackground(canvasPanel.getColor());
             }
         });
         menuBar.add(colorChooser);
@@ -546,9 +550,9 @@ public class FrontEndView extends JFrame {
 
 
     private void drawCircleActionPerformed(ActionEvent evt) {
-        boardPanel.setMode(boardPanel.DRAWCIRCLE);
-        currentTool.setText(boardPanel.DRAWCIRCLE);
-        currentColor.setBackground(boardPanel.getColor());
+        canvasPanel.setMode(canvasPanel.DRAWCIRCLE);
+        currentTool.setText(canvasPanel.DRAWCIRCLE);
+        currentColor.setBackground(canvasPanel.getColor());
     }
 
     /**
@@ -556,47 +560,56 @@ public class FrontEndView extends JFrame {
      * @param evt
      */
     private void drawLineActionPerformed(ActionEvent evt) {
-        boardPanel.setMode(boardPanel.DRAWLINE);
-        currentTool.setText(boardPanel.DRAWLINE);
-        currentColor.setBackground(boardPanel.getColor());
+        canvasPanel.setMode(canvasPanel.DRAWLINE);
+        currentTool.setText(canvasPanel.DRAWLINE);
+        currentColor.setBackground(canvasPanel.getColor());
     }
 
     private void drawRectActionPerformed(ActionEvent evt) {
-        boardPanel.setMode(boardPanel.DRAWRECT);
-        currentTool.setText(boardPanel.DRAWRECT);
-        currentColor.setBackground(boardPanel.getColor());
+        canvasPanel.setMode(canvasPanel.DRAWRECT);
+        currentTool.setText(canvasPanel.DRAWRECT);
+        currentColor.setBackground(canvasPanel.getColor());
     }
 
     private void drawOvalActionPerformed(ActionEvent evt) {
-        boardPanel.setMode(boardPanel.DRAWOVAL);
-        currentTool.setText(boardPanel.DRAWOVAL);
-        currentColor.setBackground(boardPanel.getColor());
+        canvasPanel.setMode(canvasPanel.DRAWOVAL);
+        currentTool.setText(canvasPanel.DRAWOVAL);
+        currentColor.setBackground(canvasPanel.getColor());
     }
 
 
 
     private void drawTextActionPerformed(ActionEvent evt) {
-        boardPanel.setMode(boardPanel.DRAWTEXT);
-        currentTool.setText(boardPanel.DRAWTEXT);
-        currentColor.setBackground(boardPanel.getColor());
+        canvasPanel.setMode(canvasPanel.DRAWTEXT);
+        currentTool.setText(canvasPanel.DRAWTEXT);
+        currentColor.setBackground(canvasPanel.getColor());
     }
 
     private void freeDrawButtonActionPerformed(ActionEvent evt) {
-        boardPanel.setMode(boardPanel.FREEDRAW);
-        currentTool.setText(boardPanel.FREEDRAW);
-        currentColor.setBackground(boardPanel.getColor());
+        canvasPanel.setMode(canvasPanel.FREEDRAW);
+        currentTool.setText(canvasPanel.FREEDRAW);
+        currentColor.setBackground(canvasPanel.getColor());
     }
 
     private void fileOpenActionPerformed(ActionEvent evt) {
         
     }
 
-    private void newBoardActionPerformed(ActionEvent evt) {
+    private void createNewBoardActionPerformed(ActionEvent evt) {
+        int result = JOptionPane.showConfirmDialog(this, "Have you save the board?", "Confirm", JOptionPane.YES_NO_OPTION);
+        if (result == JOptionPane.YES_OPTION) {
+            canvasPanel.newCanvas();
+            try {
+                remoteBoard.newCanvas();
+            } catch (RemoteException e) {
+                throw new RuntimeException(e);
+            }
+        }
         
     }
     public void addMessage(String text){
-        chatModel.addElement(text);
-        chatList.setModel(chatModel);
+        chatListModel.addElement(text);
+        chatJList.setModel(chatListModel);
     }
 
 
@@ -636,6 +649,10 @@ public class FrontEndView extends JFrame {
     }
 
     public void synDraw(String mode, Point start, Point end, Color color, String textDraw) {
-        boardPanel.synDraw(mode, start, end, color, textDraw);
+        canvasPanel.synDraw(mode, start, end, color, textDraw);
+    }
+
+    public void newCanvas() {
+        canvasPanel.newCanvas();
     }
 }

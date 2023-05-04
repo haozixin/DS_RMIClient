@@ -154,6 +154,13 @@ public class CanvasPanel extends JPanel{
         return startPoint;
     }
 
+    public void newCanvas() {
+        // clear the buffered image
+        graphics2D.setPaint(Color.white);
+        graphics2D.fillRect(0, 0, bufferedImage.getWidth(), bufferedImage.getHeight());
+        repaint();
+    }
+
 
     private class myMotionAdapter implements MouseMotionListener {
         @Override

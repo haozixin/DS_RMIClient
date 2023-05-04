@@ -17,4 +17,6 @@ public interface IRemoteBoard extends Remote {
     void kickOut(String name)throws RemoteException;
 
     void synDraw(String name, String mode, Point start, Point end, Color color, String textDraw)throws RemoteException;
+
+    void newCanvas()throws RemoteException;
 }

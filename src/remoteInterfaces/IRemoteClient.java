@@ -19,4 +19,6 @@ public interface IRemoteClient extends Remote {
 
     void close()throws RemoteException;
     void draw(String mode, Point start, Point end, Color color, String textDraw)throws RemoteException;
+
+    void newCanvas() throws RemoteException;
 }
