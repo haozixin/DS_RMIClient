@@ -161,6 +161,11 @@ public class CanvasPanel extends JPanel{
             end.setLocation(e.getX(), e.getY());
             if (mode.equals(FREEDRAW)) {
                 draw();
+                try {
+                    service.synDraw(name, mode, start, end, color, textDraw);
+                } catch (Exception ex) {
+                    throw new RuntimeException(ex);
+                }
                 start.setLocation(end);
             }
             if (mode.equals(DRAWLINE) || mode.equals(DRAWOVAL) || mode.equals(DRAWRECT)||mode.equals(DRAWCIRCLE)||mode.equals(DRAWTEXT) ){
