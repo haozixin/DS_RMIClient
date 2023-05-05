@@ -4,6 +4,8 @@ import remoteInterfaces.IRemoteServiceSkeleton;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
@@ -27,6 +29,9 @@ public class CanvasPanel extends JPanel{
     private final Graphics2D graphics2D;
     private final IRemoteServiceSkeleton service;
     private String name;
+    JFileChooser fileChooser;
+    FileFilter pngFilter;
+    FileFilter jpegFilter;
 
     public CanvasPanel(IRemoteServiceSkeleton service, String name) {
         this.service = service;
@@ -37,8 +42,18 @@ public class CanvasPanel extends JPanel{
         graphics2D.setColor(Color.white);
         graphics2D.fillRect(0, 0, 800, 800);
         graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        setFileChooser();
         this.addMouseMotionListener(new myMotionAdapter());
         this.addMouseListener(new myMouseAdapter());
+    }
+
+    private void setFileChooser() {
+        fileChooser = new JFileChooser();
+        fileChooser.setAcceptAllFileFilterUsed(false); // 禁用“所有文件”过滤器
+        pngFilter = new FileNameExtensionFilter("PNG Images", "png");
+        fileChooser.addChoosableFileFilter(pngFilter);
+        jpegFilter = new FileNameExtensionFilter("JPEG Images", "jpg", "jpeg");
+        fileChooser.addChoosableFileFilter(jpegFilter);
     }
 
     /**
@@ -163,14 +178,84 @@ public class CanvasPanel extends JPanel{
         repaint();
     }
 
-    public void save(String fileName) {
-        File outputfile = new File(fileName + ".png");
-        try {
-            ImageIO.write(bufferedImage, "png", outputfile);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+    public boolean save(String filePath) {
+        // Check if the file exists, if not, notify the user and call saveAs
+        File fileToSave = new File(filePath);
+        if (!fileToSave.exists()) {
+            String path = saveAs();
+            return path != null;
         }
+        String extension =getFileExtension(fileToSave);
+        if (extension == null) {
+            extension = "png";
+            fileToSave = new File(filePath + ".png");
+        }
+        // check if the file exists, if yes, ask the user if they want to overwrite
+        if (fileToSave.exists()) {
+            int overwrite = JOptionPane.showConfirmDialog(this, "File already exists, overwrite?", "Overwrite", JOptionPane.YES_NO_OPTION);
+            if (overwrite == JOptionPane.NO_OPTION) {
+                return false;
+            }
+        }
+        try {
+            ImageIO.write(bufferedImage, extension, fileToSave);
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
+
+    private String getFileExtension(File file) {
+        String name = file.getName();
+        int lastIndexOf = name.lastIndexOf(".");
+        if (lastIndexOf == -1) {
+            return null;
+        }
+        return name.substring(lastIndexOf + 1);
+    }
+
+    public String saveAs() {
+        int userSelection = fileChooser.showSaveDialog(this);
+        // if the user click the save button
+        if (userSelection == JFileChooser.APPROVE_OPTION) {
+            File fileToSave = fileChooser.getSelectedFile();
+            String extension = "";
+            // 获取用户选择的文件过滤器
+            FileFilter selectedFilter = fileChooser.getFileFilter();
+            if (selectedFilter == pngFilter) {
+                extension = "png";
+            } else if (selectedFilter == jpegFilter) {
+                extension = "jpg";
+            }
+            if (extension.trim().equals("") || extension==null) {
+                extension = "png";
+            }
+            if (!fileToSave.getAbsolutePath().endsWith(extension)) {
+                fileToSave = new File(fileToSave + "." + extension);
+            }
+
+            // check if the file exists, if yes, ask the user if they want to overwrite
+            if (fileToSave.exists()) {
+                int overwrite = JOptionPane.showConfirmDialog(this, "File already exists, overwrite?", "Overwrite", JOptionPane.YES_NO_OPTION);
+                if (overwrite == JOptionPane.NO_OPTION) {
+                    return null;
+                }
+            }
+
+            System.out.println("Save as file into: " + fileToSave.getAbsolutePath());
+            try {
+                ImageIO.write(bufferedImage, extension, fileToSave);
+                return fileToSave.getAbsolutePath();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return null;
+
+    }
+
+
 
 
     private class myMotionAdapter implements MouseMotionListener {

@@ -11,6 +11,7 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 
 public class FrontEndView extends JFrame {
+    private String filePathForSave = null;
     private final IRemoteServiceSkeleton remoteService;
     private final String name;
     DefaultListModel<String> chatListModel;
@@ -471,18 +472,25 @@ public class FrontEndView extends JFrame {
     }
 
     private void fileSaveActionPerformed(ActionEvent evt) {
-        String fileName = null;
-        fileName = JOptionPane.showInputDialog("Please enter the file name(Cannot be empty)");
-        if (fileName == null || fileName.trim().equals("")) {
-            JOptionPane.showMessageDialog(null, "File name cannot be empty, please try again");
+        // if the file name is empty, means the user has not saved the file before, then call saveAs
+        // if the file name is not empty, then save the file
+        if (filePathForSave == null || filePathForSave.trim().equals("")) {
+            fileSaveAsActionPerformed(evt);
         } else {
-            canvasPanel.save(fileName);
-            JOptionPane.showMessageDialog(null, "File saved successfully");
+            boolean isSaved = canvasPanel.save(filePathForSave);
+            if (isSaved){
+                JOptionPane.showMessageDialog(null, "File saved successfully");
+            }
         }
     }
 
     private void fileSaveAsActionPerformed(ActionEvent evt) {
-
+        // each time the user click save as, the file saving path will be reset
+        String absolutePath = canvasPanel.saveAs();
+        if (absolutePath != null) {
+            filePathForSave = absolutePath;
+            JOptionPane.showMessageDialog(null, "File saved successfully");
+        }
     }
 
 
@@ -529,13 +537,21 @@ public class FrontEndView extends JFrame {
     }
 
     private void fileOpenActionPerformed(ActionEvent evt) {
-        
+//        FileDialog fileDialog = new FileDialog(this, "open an image", FileDialog.LOAD);
+//        String currentDirectory = System.getProperty("user.dir");
+//        fileDialog.setDirectory(currentDirectory);
+//        fileDialog.setVisible(true);
+//        if (fileDialog.getFile() != null) {
+//            String fileName = fileDialog.getDirectory() + fileDialog.getFile();
+//            canvasPanel.open(fileName);
+//        }
     }
 
     private void createNewBoardActionPerformed(ActionEvent evt) {
         int result = JOptionPane.showConfirmDialog(this, "Have you save the board?", "Confirm", JOptionPane.YES_NO_OPTION);
         if (result == JOptionPane.YES_OPTION) {
             canvasPanel.newCanvas();
+            filePathForSave = null;
             try {
                 remoteService.newCanvas();
             } catch (RemoteException e) {
