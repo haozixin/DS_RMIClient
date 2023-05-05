@@ -26,7 +26,7 @@
   colours should be available.
 - [x]  Chat Window (text based): To allow users to
   communicate with each other by typing a text.
-- [ ] A “File” menu with new, open, save, saveAs and
+- [x] A “File” menu with new, open, save, saveAs and
   close should be provided (only the manager can
   control this)
 - [x] Allow the manager to kick out a certain
@@ -39,10 +39,10 @@
   the privilege of doing all the drawing operations.
 - [x] When displaying a whiteboard, the client user interface should show the
   usernames of other users who are currently editing the same whiteboard.
-- [ ] Clients may connect and disconnect at any time. When a new client joins the
+- [x] Clients may connect and disconnect at any time. When a new client joins the
   system, the client should obtain the current state of the whiteboard so that
   the same objects are always displayed to every active client.
-- [ ] Only the manager of the whiteboard should be allowed to create a new
+- [x] Only the manager of the whiteboard should be allowed to create a new
   whiteboard, open a previously saved one, save the current one, and close
   the application.
 - [x] Users should be able to work on a drawing together in real time, without
