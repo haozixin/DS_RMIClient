@@ -1,6 +1,6 @@
 package Views;
 
-import remoteInterfaces.IRemoteBoard;
+import remoteInterfaces.IRemoteServiceSkeleton;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -9,7 +9,6 @@ import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.rmi.RemoteException;
 
 public class CanvasPanel extends JPanel{
     private boolean isDrawing = false;
@@ -26,10 +25,10 @@ public class CanvasPanel extends JPanel{
     private final Point end = new Point(0,0);
     private final BufferedImage bufferedImage;
     private final Graphics2D graphics2D;
-    private final IRemoteBoard service;
+    private final IRemoteServiceSkeleton service;
     private String name;
 
-    public CanvasPanel(IRemoteBoard service, String name) {
+    public CanvasPanel(IRemoteServiceSkeleton service, String name) {
         this.service = service;
         this.name = name;
         this.setBackground(new Color(255, 255, 255));

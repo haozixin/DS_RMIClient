@@ -1,6 +1,6 @@
 import Views.FrontEndView;
-import remoteInterfaces.IRemoteBoard;
-import remoteInterfaces.IRemoteClient;
+import remoteInterfaces.IRemoteServiceSkeleton;
+import remoteInterfaces.IRemoteServiceStub;
 
 import javax.swing.*;
 import java.awt.*;
@@ -8,14 +8,14 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 
-public class ClientServant extends UnicastRemoteObject implements IRemoteClient {
+public class ServiceStubServant extends UnicastRemoteObject implements IRemoteServiceStub {
     private FrontEndView whiteBoard;
     private String name;
     private boolean isManager;
-    IRemoteBoard service;
+    IRemoteServiceSkeleton service;
     ArrayList<String> userList = new ArrayList<>();
 
-    protected ClientServant(String userName, IRemoteBoard remoteBoard) throws RemoteException, NullPointerException {
+    protected ServiceStubServant(String userName, IRemoteServiceSkeleton remoteBoard) throws RemoteException, NullPointerException {
         addShudownHook();
         this.name = userName;
         this.service = remoteBoard;

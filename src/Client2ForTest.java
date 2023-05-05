@@ -1,4 +1,4 @@
-import remoteInterfaces.IRemoteBoard;
+import remoteInterfaces.IRemoteServiceSkeleton;
 import utils.PropertiesUtil;
 
 import java.net.InetAddress;
@@ -46,10 +46,10 @@ public class Client2ForTest {
         try {
             String userName = args[2];
             Registry registry = LocateRegistry.getRegistry("localhost", serverPort);
-            IRemoteBoard ShareWhiteBoardService = (IRemoteBoard) registry.lookup(
+            IRemoteServiceSkeleton ShareWhiteBoardService = (IRemoteServiceSkeleton) registry.lookup(
                     PropertiesUtil.getConfig(S,PropertiesUtil.SERVER_CONFIG_PROPERTIES)
             );
-            ClientServant client = new ClientServant(userName, ShareWhiteBoardService);
+            ServiceStubServant client = new ServiceStubServant(userName, ShareWhiteBoardService);
         } catch (Exception e) {
             e.printStackTrace();
 //            System.out.println("Cannot link to server, Please check the server address and port number");

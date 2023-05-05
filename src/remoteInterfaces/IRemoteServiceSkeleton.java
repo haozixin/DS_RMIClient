@@ -4,9 +4,9 @@ import java.awt.*;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
-public interface IRemoteBoard extends Remote {
+public interface IRemoteServiceSkeleton extends Remote {
     boolean broadcastMessage(String username, String message) throws RemoteException;
-    boolean createOrJoinBoard(IRemoteClient user) throws RemoteException;
+    boolean createOrJoinBoard(IRemoteServiceStub user) throws RemoteException;
 
     boolean closeAndNotifyAllUsers(String managerName)throws RemoteException;
 

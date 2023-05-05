@@ -5,7 +5,7 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 
-public interface IRemoteClient extends Remote {
+public interface IRemoteServiceStub extends Remote {
     void sendMessageLocally(String msg) throws RemoteException;
     void setManager(boolean isManager) throws RemoteException;
 

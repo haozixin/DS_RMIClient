@@ -1,29 +1,24 @@
 package Views;
 
-import remoteInterfaces.IRemoteBoard;
-
-import javax.imageio.ImageIO;
+import remoteInterfaces.IRemoteServiceSkeleton;
 import javax.swing.*;
 import javax.swing.border.BevelBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.event.*;
-import java.io.File;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 
 public class FrontEndView extends JFrame {
-    private IRemoteBoard remoteBoard;
-    private String name;
+    private final IRemoteServiceSkeleton remoteService;
+    private final String name;
     DefaultListModel<String> chatListModel;
-    private boolean isManager;
+    private final boolean isManager;
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private CanvasPanel canvasPanel;
+    private final CanvasPanel canvasPanel;
 
-    private JScrollPane chatBoxPanel;
-    private JLabel chatLabel;
     private JList<String> chatJList;
     private JPanel chatPanel;
     private JButton clearChatRecordsButton;
@@ -31,10 +26,8 @@ public class FrontEndView extends JFrame {
 
     private JMenu currentColor;
     private JMenu currentTool;
-    private JRadioButtonMenuItem cursorButton;
     private JMenu cursorMenu;
     private JRadioButtonMenuItem drawOval;
-    private JLabel drawLabel;
     private JRadioButtonMenuItem drawLine;
     private JRadioButtonMenuItem drawRect;
     private JRadioButtonMenuItem drawText;
@@ -54,14 +47,12 @@ public class FrontEndView extends JFrame {
     private JMenu shapeMenu;
     private JMenu textMenu;
     private JList<String> participantsList;
-    private JLabel userListLabel;
-    private JScrollPane participantsListPanel;
     // End of variables declaration//GEN-END:variables
 
     /**
      * Creates new form BoardClient
      */
-    public FrontEndView(String name, boolean isManager, IRemoteBoard remoteBoard){
+    public FrontEndView(String name, boolean isManager, IRemoteServiceSkeleton remoteService){
         super.setTitle("ZX Share White Board ~_~ " + name);
         this.name = name;
         this.isManager = isManager;
@@ -70,8 +61,8 @@ public class FrontEndView extends JFrame {
         }
         participantsList = new JList<>();
         chatListModel = new DefaultListModel<>();
-        this.remoteBoard = remoteBoard;
-        canvasPanel = new CanvasPanel(this.remoteBoard, name);
+        this.remoteService = remoteService;
+        canvasPanel = new CanvasPanel(this.remoteService, name);
         initComponents();
         this.getContentPane().setBackground(Color.white);
         listPanel.setBackground(Color.white);
@@ -93,7 +84,7 @@ public class FrontEndView extends JFrame {
     private void initComponents() {
 
         modeGroup = new ButtonGroup();
-        drawLabel = new JLabel();
+        JLabel drawLabel = new JLabel();
         inputPanel = new JScrollPane();
         inputArea = new JTextArea();
         sendButton = new JButton();
@@ -101,12 +92,12 @@ public class FrontEndView extends JFrame {
         sendButton.setToolTipText("Click enable when you input text in the text area");
         clearChatRecordsButton = new JButton();
         listPanel = new JPanel();
-        userListLabel = new JLabel();
-        participantsListPanel = new JScrollPane();
+        JLabel userListLabel = new JLabel();
+        JScrollPane participantsListPanel = new JScrollPane();
         participantsList = new JList<>();
         chatPanel = new JPanel();
-        chatLabel = new JLabel();
-        chatBoxPanel = new JScrollPane();
+        JLabel chatLabel = new JLabel();
+        JScrollPane chatBoxPanel = new JScrollPane();
         chatJList = new JList<>();
         menuBar = new JMenuBar();
         fileMenu = new JMenu();
@@ -124,7 +115,6 @@ public class FrontEndView extends JFrame {
         drawText = new JRadioButtonMenuItem();
         freeDrawButton = new JRadioButtonMenuItem();
         cursorMenu = new JMenu();
-        cursorButton = new JRadioButtonMenuItem();
         currentTool = new JMenu();
         currentColor = new JMenu();
 
@@ -135,7 +125,7 @@ public class FrontEndView extends JFrame {
             }
         });
 
-        canvasPanel.addKeyListener(new java.awt.event.KeyAdapter() {
+        canvasPanel.addKeyListener(new KeyAdapter() {
             public void keyTyped(java.awt.event.KeyEvent evt) {
                 boardPanelKeyTyped(evt);
             }
@@ -164,8 +154,8 @@ public class FrontEndView extends JFrame {
         userListLabel.setText("Participants:");
         userListLabel.setHorizontalTextPosition(SwingConstants.CENTER);
 
-        participantsList.setModel(new AbstractListModel<String>() {
-            String[] strings = {};
+        participantsList.setModel(new AbstractListModel<>() {
+            final String[] strings = {};
             public int getSize() { return strings.length; }
             public String getElementAt(int i) { return strings[i]; }
         });
@@ -198,8 +188,8 @@ public class FrontEndView extends JFrame {
         chatLabel.setText("Messages:");
         chatLabel.setHorizontalTextPosition(SwingConstants.CENTER);
 
-        chatJList.setModel(new AbstractListModel<String>() {
-            String[] strings = {};
+        chatJList.setModel(new AbstractListModel<>() {
+            final String[] strings = {};
             public int getSize() { return strings.length; }
             public String getElementAt(int i) { return strings[i]; }
         });
@@ -296,30 +286,26 @@ public class FrontEndView extends JFrame {
         inputArea.getDocument().addDocumentListener(getListener());
 
         sendButton.setText("Send");
-        sendButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
-                try {
-                    boolean isSuccess = remoteBoard.broadcastMessage(name, inputArea.getText());
-                    if (!isSuccess) {
-                        JOptionPane.showMessageDialog(null,
-                                "userName or message is empty, maybe, you are not in the board, please join the board first");
-                    }
-                    inputArea.setText("");
-                } catch (RemoteException e) {
-                    System.out.println("Some problem with sending message, this is a RemoteException, the server may be down");
-                } catch (Exception e) {
-                    e.printStackTrace();
+        sendButton.addActionListener(evt -> {
+            try {
+                boolean isSuccess = remoteService.broadcastMessage(name, inputArea.getText());
+                if (!isSuccess) {
+                    JOptionPane.showMessageDialog(null,
+                            "userName or message is empty, maybe, you are not in the board, please join the board first");
                 }
+                inputArea.setText("");
+            } catch (RemoteException e) {
+                System.out.println("Some problem with sending message, this is a RemoteException, the server may be down");
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         });
         clearChatRecordsButton.setText("Clear");
-        clearChatRecordsButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
-                int option = JOptionPane.showConfirmDialog(null, "Are you sure you want to clean chat?", "Confirm", JOptionPane.YES_NO_OPTION);
-                if(option == JOptionPane.YES_OPTION){
-                    chatListModel = new DefaultListModel();
-                    chatJList.setModel(chatListModel);
-                }
+        clearChatRecordsButton.addActionListener(evt -> {
+            int option = JOptionPane.showConfirmDialog(null, "Are you sure you want to clean chat?", "Confirm", JOptionPane.YES_NO_OPTION);
+            if(option == JOptionPane.YES_OPTION){
+                chatListModel = new DefaultListModel<>();
+                chatJList.setModel(chatListModel);
             }
         });
     }
@@ -352,54 +338,34 @@ public class FrontEndView extends JFrame {
         drawLine.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_L, java.awt.event.InputEvent.CTRL_DOWN_MASK));
         modeGroup.add(drawLine);
         drawLine.setText("Line");
-        drawLine.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
-                drawLineActionPerformed(evt);
-            }
-        });
+        drawLine.addActionListener(this::drawLineActionPerformed);
         shapeMenu.add(drawLine);
 
         // =========================================================
         drawRect.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, java.awt.event.InputEvent.CTRL_DOWN_MASK));
         modeGroup.add(drawRect);
         drawRect.setText(canvasPanel.DRAWRECT);
-        drawRect.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
-                drawRectActionPerformed(evt);
-            }
-        });
+        drawRect.addActionListener(this::drawRectActionPerformed);
         shapeMenu.add(drawRect);
 
         // =========================================================
         drawCir.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, java.awt.event.InputEvent.CTRL_DOWN_MASK));
         modeGroup.add(drawCir);
         drawCir.setText(canvasPanel.DRAWCIRCLE);
-        drawCir.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
-                drawCircleActionPerformed(evt);
-            }
-        });
+        drawCir.addActionListener(this::drawCircleActionPerformed);
         shapeMenu.add(drawCir);
 
         // =========================================================
         drawOval.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, java.awt.event.InputEvent.CTRL_DOWN_MASK));
         modeGroup.add(drawOval);
         drawOval.setText(canvasPanel.DRAWOVAL);
-        drawOval.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
-                drawOvalActionPerformed(evt);
-            }
-        });
+        drawOval.addActionListener(this::drawOvalActionPerformed);
         shapeMenu.add(drawOval);
 
         // =========================================================
         modeGroup.add(freeDrawButton);
         freeDrawButton.setText("Free Draw");
-        freeDrawButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
-                freeDrawButtonActionPerformed(evt);
-            }
-        });
+        freeDrawButton.addActionListener(this::freeDrawButtonActionPerformed);
         shapeMenu.add(freeDrawButton);
         menuBar.add(shapeMenu);
     }
@@ -409,38 +375,22 @@ public class FrontEndView extends JFrame {
 
         newBoard.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, java.awt.event.InputEvent.CTRL_DOWN_MASK));
         newBoard.setText("New Board");
-        newBoard.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                createNewBoardActionPerformed(e);
-            }
-        });
+        newBoard.addActionListener(this::createNewBoardActionPerformed);
         fileMenu.add(newBoard);
 
         fileOpen.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, java.awt.event.InputEvent.CTRL_DOWN_MASK));
         fileOpen.setText("Open");
-        fileOpen.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
-                fileOpenActionPerformed(evt);
-            }
-        });
+        fileOpen.addActionListener(this::fileOpenActionPerformed);
         fileMenu.add(fileOpen);
 
         fileSave.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, java.awt.event.InputEvent.CTRL_DOWN_MASK));
         fileSave.setText("Save");
-        fileSave.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
-                fileSaveActionPerformed(evt);
-            }
-        });
+        fileSave.addActionListener(this::fileSaveActionPerformed);
         fileMenu.add(fileSave);
 
         fileSaveAs.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D, java.awt.event.InputEvent.CTRL_DOWN_MASK));
         fileSaveAs.setText("Save As");
-        fileSaveAs.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
-                    fileSaveAsActionPerformed(evt);
-            }
-        });
+        fileSaveAs.addActionListener(this::fileSaveAsActionPerformed);
         fileMenu.add(fileSaveAs);
 
         menuBar.add(fileMenu);
@@ -477,11 +427,7 @@ public class FrontEndView extends JFrame {
         textMenu.setText("Text");
         modeGroup.add(drawText);
         drawText.setText("drawText");
-        drawText.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
-                drawTextActionPerformed(evt);
-            }
-        });
+        drawText.addActionListener(this::drawTextActionPerformed);
         textMenu.add(drawText);
 
         menuBar.add(textMenu);
@@ -489,11 +435,9 @@ public class FrontEndView extends JFrame {
 
     private void addColorMenu() {
         colorChooser.setText("Choose Color");
-        colorChooser.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
-                canvasPanel.setColor(JColorChooser.showDialog(null, "Choose a color", Color.black));
-                currentColor.setBackground(canvasPanel.getColor());
-            }
+        colorChooser.addActionListener(evt -> {
+            canvasPanel.setColor(JColorChooser.showDialog(null, "Choose a color", Color.black));
+            currentColor.setBackground(canvasPanel.getColor());
         });
         menuBar.add(colorChooser);
     }
@@ -513,7 +457,7 @@ public class FrontEndView extends JFrame {
                     int option = JOptionPane.showConfirmDialog(null, "Are you sure to kick " + name + " out?", "Kick out", JOptionPane.YES_NO_OPTION);
                     if (option == JOptionPane.YES_OPTION) {
                         try {
-                            remoteBoard.kickOut(name);
+                            remoteService.kickOut(name);
                         } catch (RemoteException e) {
                             throw new RuntimeException(e);
                         }
@@ -593,7 +537,7 @@ public class FrontEndView extends JFrame {
         if (result == JOptionPane.YES_OPTION) {
             canvasPanel.newCanvas();
             try {
-                remoteBoard.newCanvas();
+                remoteService.newCanvas();
             } catch (RemoteException e) {
                 throw new RuntimeException(e);
             }
