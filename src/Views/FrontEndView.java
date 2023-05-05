@@ -2,12 +2,14 @@ package Views;
 
 import remoteInterfaces.IRemoteBoard;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.BevelBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.File;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 
@@ -16,7 +18,6 @@ public class FrontEndView extends JFrame {
     private String name;
     DefaultListModel<String> chatListModel;
     private boolean isManager;
-    private String fileName;
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private CanvasPanel canvasPanel;
@@ -38,7 +39,6 @@ public class FrontEndView extends JFrame {
     private JRadioButtonMenuItem drawRect;
     private JRadioButtonMenuItem drawText;
     private JRadioButtonMenuItem drawCir;
-    private JMenuItem fileClose;
     private JMenu fileMenu;
     private JMenuItem fileOpen;
     private JMenuItem fileSave;
@@ -79,7 +79,6 @@ public class FrontEndView extends JFrame {
         menuBar.setBackground(Color.white);
         menuBar.setBorder(new BevelBorder(BevelBorder.RAISED));
 
-        fileName = null;
 
 
     }
@@ -115,7 +114,6 @@ public class FrontEndView extends JFrame {
         fileOpen = new JMenuItem();
         fileSave = new JMenuItem();
         fileSaveAs = new JMenuItem();
-        fileClose = new JMenuItem();
         shapeMenu = new JMenu();
         drawLine = new JRadioButtonMenuItem();
         drawRect = new JRadioButtonMenuItem();
@@ -445,14 +443,6 @@ public class FrontEndView extends JFrame {
         });
         fileMenu.add(fileSaveAs);
 
-        fileClose.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, java.awt.event.InputEvent.CTRL_DOWN_MASK));
-        fileClose.setText("Close Board");
-        fileClose.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
-                fileCloseActionPerformed(evt);
-            }
-        });
-        fileMenu.add(fileClose);
         menuBar.add(fileMenu);
     }
 
@@ -537,11 +527,14 @@ public class FrontEndView extends JFrame {
     }
 
     private void fileSaveActionPerformed(ActionEvent evt) {
-
-    }
-
-    private void fileCloseActionPerformed(ActionEvent evt) {
-
+        String fileName = null;
+        fileName = JOptionPane.showInputDialog("Please enter the file name(Cannot be empty)");
+        if (fileName == null || fileName.trim().equals("")) {
+            JOptionPane.showMessageDialog(null, "File name cannot be empty, please try again");
+        } else {
+            canvasPanel.save(fileName);
+            JOptionPane.showMessageDialog(null, "File saved successfully");
+        }
     }
 
     private void fileSaveAsActionPerformed(ActionEvent evt) {

@@ -8,7 +8,7 @@ import java.rmi.registry.Registry;
 import java.util.Locale;
 
 
-public class Client2 {
+public class Client2ForTest {
     private static final String S = "serviceName";
     public static void main(String[] args) {
         Locale.setDefault(Locale.ENGLISH);

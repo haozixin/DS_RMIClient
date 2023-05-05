@@ -2,10 +2,13 @@ package Views;
 
 import remoteInterfaces.IRemoteBoard;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.rmi.RemoteException;
 
 public class CanvasPanel extends JPanel{
@@ -159,6 +162,15 @@ public class CanvasPanel extends JPanel{
         graphics2D.setPaint(Color.white);
         graphics2D.fillRect(0, 0, bufferedImage.getWidth(), bufferedImage.getHeight());
         repaint();
+    }
+
+    public void save(String fileName) {
+        File outputfile = new File(fileName + ".png");
+        try {
+            ImageIO.write(bufferedImage, "png", outputfile);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 
