@@ -537,14 +537,10 @@ public class FrontEndView extends JFrame {
     }
 
     private void fileOpenActionPerformed(ActionEvent evt) {
-//        FileDialog fileDialog = new FileDialog(this, "open an image", FileDialog.LOAD);
-//        String currentDirectory = System.getProperty("user.dir");
-//        fileDialog.setDirectory(currentDirectory);
-//        fileDialog.setVisible(true);
-//        if (fileDialog.getFile() != null) {
-//            String fileName = fileDialog.getDirectory() + fileDialog.getFile();
-//            canvasPanel.open(fileName);
-//        }
+        String path = canvasPanel.openImage();
+        if (path != null) {
+            filePathForSave = path;
+        }
     }
 
     private void createNewBoardActionPerformed(ActionEvent evt) {

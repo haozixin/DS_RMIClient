@@ -25,8 +25,8 @@ public class CanvasPanel extends JPanel{
     public final String DRAWTEXT = "Text";
     private Point start = new Point(0,0);
     private final Point end = new Point(0,0);
-    private final BufferedImage bufferedImage;
-    private final Graphics2D graphics2D;
+    private BufferedImage bufferedImage;
+    private Graphics2D graphics2D;
     private final IRemoteServiceSkeleton service;
     private String name;
     JFileChooser fileChooser;
@@ -255,7 +255,23 @@ public class CanvasPanel extends JPanel{
 
     }
 
+    public String openImage() {
+        int result = fileChooser.showOpenDialog(this);
+        if (result == JFileChooser.APPROVE_OPTION) {
+            File fileToOpen = fileChooser.getSelectedFile();
+            try {
+                bufferedImage = ImageIO.read(fileToOpen);
+                graphics2D = bufferedImage.createGraphics();
+                graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                repaint();
+                return fileToOpen.getAbsolutePath();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
 
+    }
 
 
     private class myMotionAdapter implements MouseMotionListener {
