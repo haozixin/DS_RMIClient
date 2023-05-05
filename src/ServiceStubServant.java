@@ -19,8 +19,9 @@ public class ServiceStubServant extends UnicastRemoteObject implements IRemoteSe
         addShudownHook();
         this.name = userName;
         this.service = remoteBoard;
-        createOrAskJoin();
         startCanvas();
+        createOrAskJoin();
+        whiteBoard.setVisible(true);
     }
 
     private void addShudownHook() {
@@ -56,11 +57,19 @@ public class ServiceStubServant extends UnicastRemoteObject implements IRemoteSe
         boolean isSuccessful = service.createOrJoinBoard(this); // isManager attribute is set in this method
         // first user is manager automatically
         if (isSuccessful){
+            // if the user is manager, don't need to syn the image
             if (isManager){
                 JOptionPane.showMessageDialog(null, "You are the manager of this board");
             }
             else{
-                JOptionPane.showMessageDialog(null, "Manager has approved you to join the board","user join request", JOptionPane.INFORMATION_MESSAGE);
+                boolean hasBeenSyn = service.synImage(name);
+                if (hasBeenSyn) {
+                    JOptionPane.showMessageDialog(null, "Manager has approved you to join the board","user join request", JOptionPane.INFORMATION_MESSAGE);
+                }else{
+                    JOptionPane.showMessageDialog(null, "There are some problem with synchronize the image, please try later","user join request", JOptionPane.INFORMATION_MESSAGE);
+                    System.exit(0);
+                }
+
             }
         }
         else{
@@ -166,7 +175,6 @@ public class ServiceStubServant extends UnicastRemoteObject implements IRemoteSe
         whiteBoard = new FrontEndView(name, isManager, service);
         whiteBoard.setSize(710,500);
         whiteBoard.updateUserList(userList);
-        whiteBoard.setVisible(true);
     }
 
 
