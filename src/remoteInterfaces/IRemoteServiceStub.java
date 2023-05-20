@@ -24,4 +24,7 @@ public interface IRemoteServiceStub extends Remote {
     void draw(String mode, Point start, Point end, Color color, String textDraw)throws RemoteException;
 
     void newCanvas() throws RemoteException;
+
+    void receiveImage(byte[] imageBytes) throws RemoteException;
+    byte[] sendImage(String filePath) throws RemoteException;
 }

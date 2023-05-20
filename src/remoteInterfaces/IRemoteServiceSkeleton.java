@@ -24,4 +24,6 @@ public interface IRemoteServiceSkeleton extends Remote {
     void newCanvas()throws RemoteException;
 
     boolean synImage(String name)throws RemoteException;
+
+    void loadImage(String name, String path)throws RemoteException;
 }

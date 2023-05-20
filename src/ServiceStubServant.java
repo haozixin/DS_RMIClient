@@ -2,8 +2,14 @@ import Views.FrontEndView;
 import remoteInterfaces.IRemoteServiceSkeleton;
 import remoteInterfaces.IRemoteServiceStub;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
@@ -26,7 +32,10 @@ public class ServiceStubServant extends UnicastRemoteObject implements IRemoteSe
 
         createOrAskJoin();
         startCanvas();
-        service.synImage(name);
+        if (!service.synImage(name)){
+            JOptionPane.showMessageDialog(null, "There is some problem when synchronizing image!", "Confirm", JOptionPane.INFORMATION_MESSAGE);
+            System.exit(0);
+        }
     }
 
     private void addShudownHook() {
@@ -181,5 +190,38 @@ public class ServiceStubServant extends UnicastRemoteObject implements IRemoteSe
     @Override
     public void sendMessageLocally(String msg) {
         whiteBoard.addMessage(msg);
+    }
+
+    @Override
+    public void receiveImage(byte[] imageBytes) throws RemoteException {
+        whiteBoard.updateCanvas(imageBytes);
+    }
+
+    public byte[] sendImage(String filePath){
+        BufferedImage image = null;
+        byte[] imageBytes;
+        if (filePath != null) {
+            File file = new File(filePath);
+            try {
+                image = ImageIO.read(file);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        else{
+            image = whiteBoard.getCanvasImage();
+        }
+
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try {
+            ImageIO.write(image, "png", baos);
+            baos.flush();
+            imageBytes = baos.toByteArray();
+            baos.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return imageBytes;
     }
 }

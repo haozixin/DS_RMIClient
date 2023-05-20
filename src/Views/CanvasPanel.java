@@ -9,6 +9,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 /**
@@ -274,6 +275,22 @@ public class CanvasPanel extends JPanel{
         }
         return null;
 
+    }
+
+    public void updateCanvas(byte[] imageBytes) {
+        try {
+            ByteArrayInputStream bais = new ByteArrayInputStream(imageBytes);
+            BufferedImage b = ImageIO.read(bais);
+            bais.close();
+            graphics2D.drawImage(b, 0, 0, null);
+            repaint();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public BufferedImage getCanvasImage() {
+        return bufferedImage;
     }
 
 

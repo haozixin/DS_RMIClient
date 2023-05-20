@@ -7,6 +7,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.image.BufferedImage;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 /**
@@ -552,7 +553,16 @@ public class FrontEndView extends JFrame {
     }
 
     private void fileOpenActionPerformed(ActionEvent evt) {
+        int result = JOptionPane.showConfirmDialog(this, "Open the new image will make current drawing loss, are you sure?", "Confirm", JOptionPane.YES_NO_OPTION);
+        if (result == JOptionPane.NO_OPTION) {
+            return;
+        }
         String path = canvasPanel.openImage();
+        try {
+            remoteService.loadImage(name, path);
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
         if (path != null) {
             filePathForSave = path;
         }
@@ -618,5 +628,13 @@ public class FrontEndView extends JFrame {
 
     public void newCanvas() {
         canvasPanel.newCanvas();
+    }
+
+    public void updateCanvas(byte[] imageBytes) {
+        canvasPanel.updateCanvas(imageBytes);
+    }
+
+    public BufferedImage getCanvasImage() {
+        return canvasPanel.getCanvasImage();
     }
 }
