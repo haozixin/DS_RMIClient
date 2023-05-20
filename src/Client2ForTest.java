@@ -54,8 +54,7 @@ public class Client2ForTest {
             );
             ServiceStubServant client = new ServiceStubServant(userName, ShareWhiteBoardService);
         } catch (Exception e) {
-            e.printStackTrace();
-//            System.out.println("Cannot link to server, Please check the server address and port number");
+            System.out.println("Cannot link to server, Please check the server address and port number");
         }
     }
 }

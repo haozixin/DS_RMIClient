@@ -199,13 +199,13 @@ public class ServiceStubServant extends UnicastRemoteObject implements IRemoteSe
 
     public byte[] sendImage(String filePath){
         BufferedImage image = null;
-        byte[] imageBytes;
+        byte[] imageBytes = null;
         if (filePath != null) {
             File file = new File(filePath);
             try {
                 image = ImageIO.read(file);
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                System.out.println("Something wrong with loading manager's image for syn");
             }
         }
         else{
@@ -220,7 +220,7 @@ public class ServiceStubServant extends UnicastRemoteObject implements IRemoteSe
             imageBytes = baos.toByteArray();
             baos.close();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            System.out.println("Something wrong with loading manager's image for syn");
         }
         return imageBytes;
     }

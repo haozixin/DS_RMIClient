@@ -301,10 +301,8 @@ public class FrontEndView extends JFrame {
                             "userName or message is empty, maybe, you are not in the board, please join the board first");
                 }
                 inputArea.setText("");
-            } catch (RemoteException e) {
-                System.out.println("Some problem with sending message, this is a RemoteException, the server may be down");
             } catch (Exception e) {
-                e.printStackTrace();
+                System.out.println("Some problem with sending message, this is a RemoteException, the server may be down");
             }
         });
         clearChatRecordsButton.setText("Clear");
@@ -476,7 +474,7 @@ public class FrontEndView extends JFrame {
                         try {
                             remoteService.kickOut(name);
                         } catch (RemoteException e) {
-                            throw new RuntimeException(e);
+                            System.out.println("Something wrong when kicking someone out of the Share Board");
                         }
                     }
                 }
@@ -561,7 +559,7 @@ public class FrontEndView extends JFrame {
         try {
             remoteService.loadImage(name, path);
         } catch (RemoteException e) {
-            throw new RuntimeException(e);
+            System.out.println("Something wrong with loading image for openFile function");
         }
         if (path != null) {
             filePathForSave = path;
@@ -576,7 +574,7 @@ public class FrontEndView extends JFrame {
             try {
                 remoteService.newCanvas();
             } catch (RemoteException e) {
-                throw new RuntimeException(e);
+                System.out.println("Something wrong when creating new board");
             }
         }
         

@@ -194,18 +194,12 @@ public class CanvasPanel extends JPanel{
             extension = "png";
             fileToSave = new File(filePath + ".png");
         }
-//        // check if the file exists, if yes, ask the user if they want to overwrite
-//        if (fileToSave.exists()) {
-//            int overwrite = JOptionPane.showConfirmDialog(this, "File already exists, overwrite?", "Overwrite", JOptionPane.YES_NO_OPTION);
-//            if (overwrite == JOptionPane.NO_OPTION) {
-//                return false;
-//            }
-//        }
+
         try {
             ImageIO.write(bufferedImage, extension, fileToSave);
             return true;
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("Something wrong when saving the image to png file");
         }
         return false;
     }
@@ -252,7 +246,7 @@ public class CanvasPanel extends JPanel{
                 ImageIO.write(bufferedImage, extension, fileToSave);
                 return fileToSave.getAbsolutePath();
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                System.out.println("Something wrong with saveAs function");
             }
         }
         return null;
@@ -270,7 +264,7 @@ public class CanvasPanel extends JPanel{
                 repaint();
                 return fileToOpen.getAbsolutePath();
             } catch (IOException e) {
-                e.printStackTrace();
+                System.out.println("Something wrong with reading image file");
             }
         }
         return null;
@@ -285,7 +279,7 @@ public class CanvasPanel extends JPanel{
             graphics2D.drawImage(b, 0, 0, null);
             repaint();
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("Something wrong with updating canvas");
         }
     }
 
@@ -303,7 +297,7 @@ public class CanvasPanel extends JPanel{
                 try {
                     service.synDraw(name, mode, start, end, color, textDraw);
                 } catch (Exception ex) {
-                    throw new RuntimeException(ex);
+                    System.out.println("Something wrong when drag mouse");
                 }
                 start.setLocation(end);
             }
@@ -342,7 +336,7 @@ public class CanvasPanel extends JPanel{
                 try {
                     service.synDraw(name, mode, start, end, color, textDraw);
                 } catch (Exception ex) {
-                    throw new RuntimeException(ex);
+                    System.out.println("something wrong when synchronizing drawing");
                 }
                 isDrawing = false;
             }
