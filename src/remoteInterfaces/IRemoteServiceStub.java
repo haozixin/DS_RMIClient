@@ -27,4 +27,6 @@ public interface IRemoteServiceStub extends Remote {
 
     void receiveImage(byte[] imageBytes) throws RemoteException;
     byte[] sendImage(String filePath) throws RemoteException;
+
+    void jumpNotification(String message) throws RemoteException;
 }

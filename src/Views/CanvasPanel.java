@@ -194,13 +194,13 @@ public class CanvasPanel extends JPanel{
             extension = "png";
             fileToSave = new File(filePath + ".png");
         }
-        // check if the file exists, if yes, ask the user if they want to overwrite
-        if (fileToSave.exists()) {
-            int overwrite = JOptionPane.showConfirmDialog(this, "File already exists, overwrite?", "Overwrite", JOptionPane.YES_NO_OPTION);
-            if (overwrite == JOptionPane.NO_OPTION) {
-                return false;
-            }
-        }
+//        // check if the file exists, if yes, ask the user if they want to overwrite
+//        if (fileToSave.exists()) {
+//            int overwrite = JOptionPane.showConfirmDialog(this, "File already exists, overwrite?", "Overwrite", JOptionPane.YES_NO_OPTION);
+//            if (overwrite == JOptionPane.NO_OPTION) {
+//                return false;
+//            }
+//        }
         try {
             ImageIO.write(bufferedImage, extension, fileToSave);
             return true;

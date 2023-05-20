@@ -224,4 +224,9 @@ public class ServiceStubServant extends UnicastRemoteObject implements IRemoteSe
         }
         return imageBytes;
     }
+
+    @Override
+    public void jumpNotification(String message) throws RemoteException {
+        JOptionPane.showMessageDialog(whiteBoard, message);
+    }
 }
