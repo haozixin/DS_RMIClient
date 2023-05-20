@@ -11,7 +11,10 @@ import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-
+/**
+ * Author:  Zixin Hao
+ * Student ID: 1309180
+ */
 public class CanvasPanel extends JPanel{
     private boolean isDrawing = false;
     private String textDraw = "";

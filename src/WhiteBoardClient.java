@@ -8,7 +8,10 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.Locale;
 
-
+/**
+ * Author:  Zixin Hao
+ * Student ID: 1309180
+ */
 public class WhiteBoardClient {
     private static final String S = "serviceName";
     public static void main(String[] args) {

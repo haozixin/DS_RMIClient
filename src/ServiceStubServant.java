@@ -8,6 +8,10 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 
+/**
+ * Author:  Zixin Hao
+ * Student ID: 1309180
+ */
 public class ServiceStubServant extends UnicastRemoteObject implements IRemoteServiceStub {
     private FrontEndView whiteBoard;
     private String name;

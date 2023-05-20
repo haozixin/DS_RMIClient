@@ -9,7 +9,10 @@ import java.awt.*;
 import java.awt.event.*;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-
+/**
+ * Author:  Zixin Hao
+ * Student ID: 1309180
+ */
 public class FrontEndView extends JFrame {
     private String filePathForSave = null;
     private final IRemoteServiceSkeleton remoteService;
