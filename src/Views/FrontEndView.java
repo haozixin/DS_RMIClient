@@ -14,6 +14,7 @@ import java.util.ArrayList;
  * Student ID: 1309180
  */
 public class FrontEndView extends JFrame {
+    private JMenuItem boardClose;
     private String filePathForSave = null;
     private final IRemoteServiceSkeleton remoteService;
     private final String name;
@@ -107,6 +108,7 @@ public class FrontEndView extends JFrame {
         fileMenu = new JMenu();
         newBoard = new JMenuItem();
         fileOpen = new JMenuItem();
+        boardClose = new JMenuItem();
         fileSave = new JMenuItem();
         fileSaveAs = new JMenuItem();
         shapeMenu = new JMenu();
@@ -397,7 +399,17 @@ public class FrontEndView extends JFrame {
         fileSaveAs.addActionListener(this::fileSaveAsActionPerformed);
         fileMenu.add(fileSaveAs);
 
+        boardClose.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_C, java.awt.event.InputEvent.CTRL_DOWN_MASK));
+        boardClose.setText("Close Board");
+        boardClose.addActionListener(this::boardCloseActionPerformed);
+        fileMenu.add(boardClose);
+
         menuBar.add(fileMenu);
+    }
+
+    private void boardCloseActionPerformed(ActionEvent evt) {
+        WindowEvent closingEvent = new WindowEvent(this, WindowEvent.WINDOW_CLOSING);
+        this.dispatchEvent(closingEvent);
     }
 
     private void addCurrentToolAndColor() {

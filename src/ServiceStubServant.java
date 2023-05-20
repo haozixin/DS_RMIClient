@@ -23,8 +23,10 @@ public class ServiceStubServant extends UnicastRemoteObject implements IRemoteSe
         addShudownHook();
         this.name = userName;
         this.service = remoteBoard;
+
         createOrAskJoin();
         startCanvas();
+        service.synImage(name);
     }
 
     private void addShudownHook() {
@@ -37,14 +39,14 @@ public class ServiceStubServant extends UnicastRemoteObject implements IRemoteSe
                         service.closeAndNotifyAllUsers(name);
                     } catch (Exception e) {
                         System.out.println("RemoteException when closing the board, the server may be down");
-                        JOptionPane.showMessageDialog(null,"The server side may be down, we will close the board for you!", "Confirm", JOptionPane.INFORMATION_MESSAGE);
+                        JOptionPane.showMessageDialog(null, "The server side may be down, we will close the board for you!", "Confirm", JOptionPane.INFORMATION_MESSAGE);
                     }
-                }else{
+                } else {
                     try {
                         service.existBoard(name);
                     } catch (Exception e) {
                         System.out.println("RemoteException when closing the board, the server may be down");
-                        JOptionPane.showMessageDialog(null,"The server side may be down, we will close the board for you!", "Confirm", JOptionPane.INFORMATION_MESSAGE);
+                        JOptionPane.showMessageDialog(null, "The server side may be down, we will close the board for you!", "Confirm", JOptionPane.INFORMATION_MESSAGE);
                     }
                 }
             }
@@ -53,28 +55,27 @@ public class ServiceStubServant extends UnicastRemoteObject implements IRemoteSe
 
     private void createOrAskJoin() throws RemoteException {
         boolean isRepeated = service.isRepeated(name);
-        if (isRepeated){
+        if (isRepeated) {
             JOptionPane.showMessageDialog(null, "This userName is already used, please choose another one");
             System.exit(0);
         }
         boolean isSuccessful = service.createOrJoinBoard(this); // isManager attribute is set in this method
         // first user is manager automatically
-        if (isSuccessful){
-            if (isManager){
+        if (isSuccessful) {
+            // if the user is manager, don't need to syn the image
+            if (isManager) {
                 JOptionPane.showMessageDialog(null, "You are the manager of this board");
+            } else {
+                JOptionPane.showMessageDialog(null, "Manager has approved you to join the board", "user join request", JOptionPane.INFORMATION_MESSAGE);
             }
-            else{
-                JOptionPane.showMessageDialog(null, "Manager has approved you to join the board","user join request", JOptionPane.INFORMATION_MESSAGE);
-            }
-        }
-        else{
+        } else {
             JOptionPane.showMessageDialog(null, "Manager has denied you to join the board", "user join request", JOptionPane.INFORMATION_MESSAGE);
             System.exit(0);
         }
     }
 
     @Override
-    public String getName(){
+    public String getName() {
         return name;
     }
 
@@ -82,24 +83,24 @@ public class ServiceStubServant extends UnicastRemoteObject implements IRemoteSe
     public void updateUserList(ArrayList<String> userList) throws RemoteException {
         if (whiteBoard == null) {
             this.userList = userList;
-        }else{
+        } else {
             whiteBoard.updateUserList(userList);
         }
     }
 
     @Override
     public boolean askJoin(String name) {
-        int result = JOptionPane.showConfirmDialog(null, "User "+name+" wants to join the board, do you approve?", "Manager approval", JOptionPane.YES_NO_OPTION);
+        int result = JOptionPane.showConfirmDialog(null, "User " + name + " wants to join the board, do you approve?", "Manager approval", JOptionPane.YES_NO_OPTION);
         return result == JOptionPane.YES_OPTION;
     }
 
     @Override
-    public boolean isManager(){
+    public boolean isManager() {
         return isManager;
     }
 
     @Override
-    public void setManager(boolean isManager){
+    public void setManager(boolean isManager) {
         this.isManager = isManager;
     }
 
@@ -111,8 +112,10 @@ public class ServiceStubServant extends UnicastRemoteObject implements IRemoteSe
         }
         notifyAndClose(s);
     }
+
     /**
      * This method is called by remoteBoard to notify the user that the board is closed
+     *
      * @param s messages to be displayed
      * @return
      * @throws RemoteException
@@ -128,7 +131,7 @@ public class ServiceStubServant extends UnicastRemoteObject implements IRemoteSe
         t.start();
     }
 
-    public void close(){
+    public void close() {
         Thread t = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -141,6 +144,7 @@ public class ServiceStubServant extends UnicastRemoteObject implements IRemoteSe
     /**
      * the method will open a new thread to draw the shape in order to avoid concurrency problem
      * (the remote draw and local draw together are performed in the same thread)
+     *
      * @param mode
      * @param start
      * @param end
@@ -166,9 +170,9 @@ public class ServiceStubServant extends UnicastRemoteObject implements IRemoteSe
     }
 
 
-    public void startCanvas(){
+    public void startCanvas() {
         whiteBoard = new FrontEndView(name, isManager, service);
-        whiteBoard.setSize(710,500);
+        whiteBoard.setSize(710, 500);
         whiteBoard.updateUserList(userList);
         whiteBoard.setVisible(true);
     }
