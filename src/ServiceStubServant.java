@@ -26,11 +26,12 @@ public class ServiceStubServant extends UnicastRemoteObject implements IRemoteSe
     ArrayList<String> userList = new ArrayList<>();
 
     protected ServiceStubServant(String userName, IRemoteServiceSkeleton remoteBoard) throws RemoteException, NullPointerException {
-        addShudownHook();
+
         this.name = userName;
         this.service = remoteBoard;
 
         createOrAskJoin();
+        addShudownHook();
         startCanvas();
         if (!service.synImage(name)){
             JOptionPane.showMessageDialog(null, "There is some problem when synchronizing image!", "Confirm", JOptionPane.INFORMATION_MESSAGE);

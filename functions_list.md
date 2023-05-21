@@ -1,14 +1,3 @@
-1. Shapes: at least your white board should support for line, circle, oval, and rectangle.
-2. Text inputting– allow user to type text anywhere inside the white board.
-3. User should be able choose their favourite colour to draw the above features. At least 16 colours should be available.
-
-4. 窗口组件随着窗口大小的变化而变化，保证窗口组件的可见性。
-5. 自由画笔
-6. 选择各种颜色（用的自带组件）
-7. 图形选择快捷键
-8. 异常中断，会告诉服务器，并更新用户列表
-9. 如果是第一次保存，点击save时会发出提示并自动调用saveAs进行储存，下次再点击save时，对于保存过第一次的画板会保存到对应的文件中
-10. 每次创建新画板会fileSavePath会被重置为null, 意味着点击save时，会调用saveAs，而不是保存到之前的文件中 （画流程图）
 
 
 ## 最低功能：
