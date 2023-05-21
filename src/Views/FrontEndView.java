@@ -573,7 +573,7 @@ public class FrontEndView extends JFrame {
             filePathForSave = null;
             try {
                 remoteService.newCanvas();
-            } catch (RemoteException e) {
+            } catch (Exception e) {
                 System.out.println("Something wrong when creating new board");
             }
         }
